@@ -60,9 +60,18 @@ public class Car {
         // equals-method for Reservation is required!
         reservations.remove(reservation);
     }
-    
+
+    /**
+     * Get all the reservations corresponding to the car.
+     * @return A list containing the reservations
+     */
     public List<Reservation> getReservations() {
-    	List<Reservation> copy = new ArrayList<Reservation>(reservations.size());
+        /*
+        This method performs a deep copy instead of returning a reference
+        to the reservations list. In this way it is not possible, for a
+        whichever user, to modify the reservations in the list.
+         */
+    	List<Reservation> copy = new ArrayList<>(reservations.size());
     	for (Reservation r : reservations) {
     		copy.add(new Reservation(
     				new Quote(
