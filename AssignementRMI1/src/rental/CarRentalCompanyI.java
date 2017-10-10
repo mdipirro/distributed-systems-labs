@@ -12,4 +12,5 @@ public interface CarRentalCompanyI extends Remote {
 	Quote createQuote(ReservationConstraints constraints, String client)
 			throws ReservationException, RemoteException;
 	List<Reservation> getReservationsByRenter(String renter) throws RemoteException;
+	List<Reservation> getReservationsByCarType(String carType) throws RemoteException;
 }
