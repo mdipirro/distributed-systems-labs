@@ -63,7 +63,7 @@ public class RentalServer {
 							Float.parseFloat(csvReader.nextToken()),
 							Double.parseDouble(csvReader.nextToken()),
 							Boolean.parseBoolean(csvReader.nextToken()));
-					//System.out.println(type);
+					System.out.println(type);
 					// create N new cars with given type, where N is the 5th field
 					for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 						out.cars.add(new Car(nextuid++, type));
