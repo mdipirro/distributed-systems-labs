@@ -201,19 +201,19 @@ public class CarRentalCompany implements CarRentalCompanyI {
 	}
 	
 	/**
-	 * Get all the reservations for a specific car type
+	 * Get the number of the reservations for a specific car type
 	 * @param carType Car type
-	 * @return A List containing reservations for that car type
+	 * @return The number of the reservations for a specific car type
 	 */
-	public List<Reservation> getReservationsByCarType(String carType) {
-		List<Reservation> reservations = new ArrayList<Reservation>();
+	public int getNumberOfReservationsForCarType(String carType) {
+		int k = 0;
 		for (Car car : cars) {
 			for (Reservation r : car.getReservations()) {
 				if (r.getCarType().equals(carType)) {
-					reservations.add(r);
+					k++;
 				}
 			}
 		}
-		return reservations;
+		return k;
 	}
 }

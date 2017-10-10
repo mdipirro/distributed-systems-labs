@@ -139,6 +139,6 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected int getNumberOfReservationsForCarType(String carType) throws Exception {
-        return comp.getReservationsByCarType(carType).size();
+        return comp.getNumberOfReservationsForCarType(carType);
 	}
 }
