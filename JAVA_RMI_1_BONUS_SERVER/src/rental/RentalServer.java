@@ -16,6 +16,10 @@ public class RentalServer {
 	
 	private static final String CRC_NAME = "CarRentalCompany";
 	
+        /*
+        Before run: Set system variable java.rmi.server.hostname
+        example: -Djava.rmi.server.hostname="10.92.x.x"
+        */
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
 		CrcData data  = loadData("hertz.csv");
