@@ -16,14 +16,16 @@ public class Client extends AbstractTestBooking {
 	 * MAIN *
 	 ********/
 
+        /*
+        Before start set system variable ds.server.ip
+        Example: -Dds.server.ip="10.92.x.x"
+        */
 	public static void main(String[] args) throws Exception {
 
 		String carRentalCompanyName = "CarRentalCompany";
 
-		//System.setSecurityManager(new SecurityManager());
 		if (System.getSecurityManager() == null) {
-			//System.setSecurityManager(new SecurityManager());
-			System.out.println("Security manager je vypnuty");
+			System.out.println("Security manager is NULL");
 		}
 
 		// An example reservation scenario on car rental company 'Hertz' would be...
@@ -39,9 +41,9 @@ public class Client extends AbstractTestBooking {
 		super(scriptFile);
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry();
+			registry = LocateRegistry.getRegistry(System.getProperty("ds.server.ip"));
 			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);        //TODO pouzit mattheo's interface, jaky nazov tam pouzil?
-		} catch (Exception e) {
+                } catch (Exception e) {
 			System.err.println("EXCEPTION during client creation:");
 			e.printStackTrace();
 		}
@@ -63,7 +65,7 @@ public class Client extends AbstractTestBooking {
 		Set<CarType> availableTypes = comp.getAvailableCarTypes(start, end);
 		for (CarType carType : availableTypes) {
 		    System.out.println(carType);
-        }
+                }
 	}
 
 	/**

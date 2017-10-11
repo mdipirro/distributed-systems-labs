@@ -31,3 +31,5 @@ hs_err_pid*
 /JAVA_RMI_1_BONUS_SERVER/nbproject/private/
 /JAVA_RMI_1_BONUS_SERVER/dist/
 /JAVA_RMI_1_BONUS_SERVER/build/
+/JAVA_RMI_1_BONUS_CLIENT/build/
+/JAVA_RMI_1_BONUS_CLIENT/dist/
