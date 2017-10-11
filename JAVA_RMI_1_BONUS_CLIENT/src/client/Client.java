@@ -24,10 +24,6 @@ public class Client extends AbstractTestBooking {
 
 		String carRentalCompanyName = "CarRentalCompany";
 
-		if (System.getSecurityManager() == null) {
-			System.out.println("Security manager is NULL");
-		}
-
 		// An example reservation scenario on car rental company 'Hertz' would be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
 		client.run();
@@ -42,7 +38,7 @@ public class Client extends AbstractTestBooking {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(System.getProperty("ds.server.ip"));
-			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);        //TODO pouzit mattheo's interface, jaky nazov tam pouzil?
+			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
                 } catch (Exception e) {
 			System.err.println("EXCEPTION during client creation:");
 			e.printStackTrace();
