@@ -19,13 +19,6 @@ public class Client extends AbstractTestBooking {
 	public static void main(String[] args) throws Exception {
 
 		String carRentalCompanyName = "CarRentalCompany";
-
-		//System.setSecurityManager(new SecurityManager());
-		if (System.getSecurityManager() == null) {
-			//System.setSecurityManager(new SecurityManager());
-			System.out.println("Security manager je vypnuty");
-		}
-
 		// An example reservation scenario on car rental company 'Hertz' would be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
 		client.run();
@@ -40,7 +33,7 @@ public class Client extends AbstractTestBooking {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry();
-			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);        //TODO pouzit mattheo's interface, jaky nazov tam pouzil?
+			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
 		} catch (Exception e) {
 			System.err.println("EXCEPTION during client creation:");
 			e.printStackTrace();
