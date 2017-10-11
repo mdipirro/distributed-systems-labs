@@ -24,10 +24,8 @@ public class RentalServer {
 			NumberFormatException, IOException {
 		CrcData data  = loadData("hertz.csv");
 		CarRentalCompany crc = new CarRentalCompany(data.name, data.regions, data.cars);
-		
-		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(null);
-		}
+
+		System.setSecurityManager(null);
 		try {
 			CarRentalCompanyI stub = (CarRentalCompanyI) UnicastRemoteObject.exportObject(crc, 0);
 			Registry registry = LocateRegistry.getRegistry();
