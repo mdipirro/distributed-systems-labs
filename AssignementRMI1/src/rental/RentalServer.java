@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 
 public class RentalServer {
 	
-	private static final String CRC_NAME = "CarRentalCompany";
+	public static final String CRC_NAME = "Hertz";
 	
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {

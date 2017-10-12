@@ -8,6 +8,8 @@ import java.util.Set;
 
 import rental.*;
 
+import static rental.RentalServer.CRC_NAME;
+
 public class Client extends AbstractTestBooking {
 
 	private CarRentalCompanyI comp;
@@ -18,9 +20,8 @@ public class Client extends AbstractTestBooking {
 
 	public static void main(String[] args) throws Exception {
 
-		String carRentalCompanyName = "CarRentalCompany";
 		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", carRentalCompanyName);
+		Client client = new Client("simpleTrips", CRC_NAME);
 		client.run();
 	}
 
@@ -32,6 +33,7 @@ public class Client extends AbstractTestBooking {
 		super(scriptFile);
 		Registry registry;
 		try {
+			System.setSecurityManager(null);
 			registry = LocateRegistry.getRegistry();
 			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
 		} catch (Exception e) {
