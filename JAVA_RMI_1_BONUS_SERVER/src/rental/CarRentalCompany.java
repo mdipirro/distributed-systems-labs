@@ -208,11 +208,8 @@ public class CarRentalCompany implements CarRentalCompanyI {
 	public int getNumberOfReservationsForCarType(String carType) {
 		int k = 0;
 		for (Car car : cars) {
-			for (Reservation r : car.getReservations()) {
-				if (r.getCarType().equals(carType)) {
-					k++;
-				}
-			}
+                        if(car.getType().getName().equals(carType))
+                            k+=car.getReservations().size();
 		}
 		return k;
 	}

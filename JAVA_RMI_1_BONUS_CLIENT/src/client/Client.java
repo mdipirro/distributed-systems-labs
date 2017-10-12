@@ -25,7 +25,6 @@ public class Client extends AbstractTestBooking {
 		String carRentalCompanyName = "Hertz";
 
 		System.setSecurityManager(null);
-
 		// An example reservation scenario on car rental company 'Hertz' would be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
 		client.run();
