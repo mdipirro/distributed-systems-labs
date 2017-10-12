@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 
 public class RentalServer {
 	
-	private static final String CRC_NAME = "CarRentalCompany";
+	public static final String CRC_NAME = "Hertz";
 	
         /*
         Before run: Set system variable java.rmi.server.hostname

@@ -22,11 +22,9 @@ public class Client extends AbstractTestBooking {
         */
 	public static void main(String[] args) throws Exception {
 
-		String carRentalCompanyName = "CarRentalCompany";
+		String carRentalCompanyName = "Hertz";
 
-		if (System.getSecurityManager() == null) {
-			System.out.println("Security manager is NULL");
-		}
+		System.setSecurityManager(null);
 
 		// An example reservation scenario on car rental company 'Hertz' would be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
@@ -42,7 +40,7 @@ public class Client extends AbstractTestBooking {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(System.getProperty("ds.server.ip"));
-			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);        //TODO pouzit mattheo's interface, jaky nazov tam pouzil?
+			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
                 } catch (Exception e) {
 			System.err.println("EXCEPTION during client creation:");
 			e.printStackTrace();
