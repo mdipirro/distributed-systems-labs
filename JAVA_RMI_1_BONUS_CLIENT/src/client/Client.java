@@ -8,6 +8,8 @@ import java.util.Set;
 
 import rental.*;
 
+import static rental.RentalServer.CRC_NAME;
+
 public class Client extends AbstractTestBooking {
 
 	private CarRentalCompanyI comp;
@@ -21,12 +23,11 @@ public class Client extends AbstractTestBooking {
         Example: -Dds.server.ip="10.92.x.x"
         */
 	public static void main(String[] args) throws Exception {
-
 		String carRentalCompanyName = "Hertz";
 
 		System.setSecurityManager(null);
 		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", carRentalCompanyName);
+		Client client = new Client("simpleTrips", CRC_NAME);
 		client.run();
 	}
 
@@ -38,9 +39,16 @@ public class Client extends AbstractTestBooking {
 		super(scriptFile);
 		Registry registry;
 		try {
+<<<<<<< HEAD:JAVA_RMI_1_BONUS_CLIENT/src/client/Client.java
 			registry = LocateRegistry.getRegistry(System.getProperty("ds.server.ip"));
 			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
                 } catch (Exception e) {
+=======
+			System.setSecurityManager(null);
+			registry = LocateRegistry.getRegistry();
+			comp = (CarRentalCompanyI) registry.lookup(carRentalCompanyName);
+		} catch (Exception e) {
+>>>>>>> master:AssignementRMI1/src/client/Client.java
 			System.err.println("EXCEPTION during client creation:");
 			e.printStackTrace();
 		}
