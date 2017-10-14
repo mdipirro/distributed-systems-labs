@@ -16,11 +16,15 @@ public class RentalServer {
 	
 	public static final String CRC_NAME = "Hertz";
 	
+        /*
+        Before run: Set system variable java.rmi.server.hostname
+        example: -Djava.rmi.server.hostname="10.92.x.x"
+        */
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
 		CrcData data  = loadData("hertz.csv");
 		CarRentalCompany crc = new CarRentalCompany(data.name, data.regions, data.cars);
-		
+
 		System.setSecurityManager(null);
 		try {
 			CarRentalCompanyI stub = (CarRentalCompanyI) UnicastRemoteObject.exportObject(crc, 0);

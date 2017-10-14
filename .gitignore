@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.ear
 *.zip
@@ -27,3 +27,9 @@ hs_err_pid*
 *.iml
 *.project
 
+/JAVA_RMI_1_BONUS_CLIENT/nbproject/private/
+/JAVA_RMI_1_BONUS_SERVER/nbproject/private/
+/JAVA_RMI_1_BONUS_SERVER/dist/
+/JAVA_RMI_1_BONUS_SERVER/build/
+/JAVA_RMI_1_BONUS_CLIENT/build/
+/JAVA_RMI_1_BONUS_CLIENT/dist/
