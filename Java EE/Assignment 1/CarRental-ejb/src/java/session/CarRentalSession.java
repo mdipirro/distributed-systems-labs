@@ -38,7 +38,8 @@ public class CarRentalSession implements CarRentalSessionRemote {
         // Look for a company having the requested region 
         while (iterator.hasNext() && !companyFound) {
             company = iterator.next();
-            companyFound = (company.hasRegion(constraints.getRegion()));
+            companyFound = (company.hasRegion(constraints.getRegion())) &&
+                    company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
         }
         if (company != null) { // A company has been found
             Quote quote = company.createQuote(constraints, guest);
@@ -76,5 +77,14 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public List<Quote> getCurrentQuotes() {
         return quotes;
+    }
+
+    @Override
+    public List<CarType> getAvailableCarTypes(Date start, Date end) {
+        List<CarType> availableCarTypes = new ArrayList<CarType>();
+        for (CarRentalCompany company : RentalStore.getRentals().values()) {
+            availableCarTypes.addAll(company.getAvailableCarTypes(start, end));
+        }
+        return availableCarTypes;
     }
 }
