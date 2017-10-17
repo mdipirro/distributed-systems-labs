@@ -1,8 +1,10 @@
 package session;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
+import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
@@ -15,6 +17,6 @@ public interface CarRentalSessionRemote {
     Quote createQuote(ReservationConstraints constraints, String guest)
             throws ReservationException;
     List<Quote> getCurrentQuotes();
-    Reservation confirmQuote(Quote quote) throws ReservationException;
+    List<Reservation> confirmQuotes() throws ReservationException;
     
 }

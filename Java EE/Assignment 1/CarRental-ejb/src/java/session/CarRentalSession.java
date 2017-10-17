@@ -1,14 +1,14 @@
 package session;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import rental.CarRentalCompany;
+import rental.CarType;
 import rental.Quote;
 import rental.RentalStore;
 import rental.Reservation;
@@ -51,11 +51,24 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public Reservation confirmQuote(Quote quote) throws ReservationException {
+    public List<Reservation> confirmQuotes() throws ReservationException {
+        // Allocate a list of reservation with the same siza as quotes
+        List<Reservation> reservations = new ArrayList<Reservation>(quotes.size());
+        Quote failed = null;
         try {
-            return RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote);
+            // For each quote, try to confirm it
+            for (Quote quote : quotes) {
+                failed = quote;
+                reservations.add(
+                    RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote)
+                );
+            }
+            return reservations;
         } catch (ReservationException exc) {
-            quotes.remove(quote);
+            for (Reservation reservation : reservations) {
+                RentalStore.getRental(reservation.getRentalCompany()).cancelReservation(reservation);
+            }
+            quotes.remove(failed);
             throw exc;
         }
     }
