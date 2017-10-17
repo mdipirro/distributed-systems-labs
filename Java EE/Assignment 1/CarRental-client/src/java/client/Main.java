@@ -41,13 +41,10 @@ public class Main extends AbstractTestAgency {
 
     @Override
     protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-        //if (session instanceof CarRentalSessionRemote) {
-            CarRentalSessionRemote bean = (CarRentalSessionRemote)session;
-            for(CarType carType : bean.getAvailableCarTypes(start, end)) {
-                System.out.println(carType);
-            }
-        //}
-        //throw new ClassCastException("Wrong session object provided");
+        CarRentalSessionRemote bean = (CarRentalSessionRemote)session;
+        for(CarType carType : bean.getAvailableCarTypes(start, end)) {
+            System.out.println(carType);
+        }
     }
 
     @Override
