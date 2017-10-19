@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class ReservationConstraints implements Serializable {
     
+    public static long serialVersionUID = 1L;
+    
     private Date startDate;
     private Date endDate;
     private String carType;

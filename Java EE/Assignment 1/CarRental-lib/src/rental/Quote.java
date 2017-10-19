@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Quote implements Serializable {
+    
+    public static long serialVersionUID = 1L;
 
     private Date startDate;
     private Date endDate;

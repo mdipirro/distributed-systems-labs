@@ -3,6 +3,8 @@ package rental;
 import java.io.Serializable;
 
 public class Reservation extends Quote implements Serializable {
+    
+    public static long serialVersionUID = 1L;
 
     private int carId;
     
