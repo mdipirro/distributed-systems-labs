@@ -73,4 +73,17 @@ public class Main extends AbstractTestAgency {
         ManagerSessionRemote bean = (ManagerSessionRemote)ms;
         return bean.getNumberOfReservationsBy(clientName);
     }
+
+    @Override
+    protected String getBestCustomer(Object ms) {
+        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
+        return bean.getBestCustomer();
+    }    
+
+    @Override
+    protected List getCarTypes(Object ms, String carRentalName){
+        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
+        return bean.getCarTypes(carRentalName);
+    }
+    
 }
