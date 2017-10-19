@@ -67,4 +67,10 @@ public class Main extends AbstractTestAgency {
         ManagerSessionRemote bean = (ManagerSessionRemote)ms;
         return bean.getNumberOfReservationsForCarType(carType, carRentalName);
     }
+
+    @Override
+    protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
+        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
+        return bean.getNumberOfReservationsBy(clientName);
+    }
 }
