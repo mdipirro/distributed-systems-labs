@@ -119,6 +119,23 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception;
+    
+    /**
+     * Get the the best customer (across whole rental agency).
+     *
+     * @param ms manager session
+     * @return name of best customer
+     */
+    protected abstract String getBestCustomer(ManagerSession ms);
+    
+    /**
+     * Get the list of car types for a particular car rental company
+     *
+     * @param ms manager session
+     * @param carRentalName name of the rental company managed by this session
+     * @return list of car types for a particular car rental company
+     */
+    protected abstract List<CarType> getCarTypes(ManagerSession ms, String carRentalName);
 
     public AbstractTestAgency(String scriptFile) {
         super(scriptFile);
@@ -179,8 +196,8 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
 			} catch (Exception e) { throw new ApplicationException(e); }
         } else {
             throw new IllegalArgumentException("Unknown command");
-        }
-    }
+                }
+            }
 
     private void assessTotalReservations(String name, StringTokenizer scriptReader) throws Exception {
         ManagerSession rental = getNewManagerSession(name, name);
