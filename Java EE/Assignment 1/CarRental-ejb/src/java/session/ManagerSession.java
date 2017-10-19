@@ -22,7 +22,7 @@ public class ManagerSession implements ManagerSessionRemote{
     @Override 
     public List<CarType> getCarTypes(String companyName) { 
         CarRentalCompany company = RentalStore.getRental(companyName); 
-        return new ArrayList(company.getAllCarTypes()); 
+        return new ArrayList<CarType>(company.getAllCarTypes()); 
     } 
  
     @Override 
@@ -59,6 +59,21 @@ public class ManagerSession implements ManagerSessionRemote{
             } 
         } 
         return customerName; 
-    } 
+    }
+
+    @Override
+    public int getNumberOfReservationsBy(String name) {
+        int numOfReservation = 0; 
+        for(Map.Entry<String, CarRentalCompany> entry : RentalStore.getRentals().entrySet()){ 
+            for(Car car: entry.getValue().getCars()){ 
+                for(Reservation reservation : car.getAllReservations()){ 
+                    if(reservation.getCarRenter().equals(name)){ 
+                        numOfReservation++;
+                    }                     
+                } 
+            } 
+        } 
+        return numOfReservation;
+    }
      
 } 
