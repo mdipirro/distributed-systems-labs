@@ -58,32 +58,16 @@ public class Main extends AbstractTestAgency {
 
     @Override
     protected List<Reservation> confirmQuotes(Object session, String name) throws Exception {
-        CarRentalSessionRemote bean = (CarRentalSessionRemote)session;
-        return bean.confirmQuotes();
+        return ((CarRentalSessionRemote)session).confirmQuotes();
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
-        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
-        return bean.getNumberOfReservationsForCarType(carType, carRentalName);
+        return ((ManagerSessionRemote)ms).getNumberOfReservationsForCarType(carType, carRentalName);
     }
 
     @Override
     protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
-        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
-        return bean.getNumberOfReservationsBy(clientName);
+        return ((ManagerSessionRemote)ms).getNumberOfReservationsBy(clientName);
     }
-
-    @Override
-    protected String getBestCustomer(Object ms) {
-        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
-        return bean.getBestCustomer();
-    }    
-
-    @Override
-    protected List getCarTypes(Object ms, String carRentalName){
-        ManagerSessionRemote bean = (ManagerSessionRemote)ms;
-        return bean.getCarTypes(carRentalName);
-    }
-    
 }
