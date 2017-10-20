@@ -38,12 +38,13 @@ public class ManagerSession implements ManagerSessionRemote{
     } 
  
     @Override 
-    public String getBestCustomer() { 
+    public String getBestCustomer(String companyName) { 
         String customerName = null; 
         int max = 0; 
         Map<String, Integer> customersReservationsNum = new HashMap<String, Integer>(); 
-        for(Map.Entry<String, CarRentalCompany> entry : RentalStore.getRentals().entrySet()){ 
-            for(Car car: entry.getValue().getCars()){ 
+        //for(Map.Entry<String, CarRentalCompany> entry : RentalStore.getRentals().entrySet()){ 
+        //    for(Car car: entry.getValue().getCars()){ 
+            for(Car car: RentalStore.getRental(companyName).getCars()){
                 for(Reservation reservation : car.getAllReservations()){ 
                     if(customersReservationsNum.containsKey(reservation.getCarRenter())){ 
                         customersReservationsNum.put(reservation.getCarRenter(), customersReservationsNum.get(reservation.getCarRenter())+1); 
@@ -51,13 +52,13 @@ public class ManagerSession implements ManagerSessionRemote{
                     else{ 
                         customersReservationsNum.put(reservation.getCarRenter(), 1); 
                     } 
-                    if(max<=customersReservationsNum.get(reservation.getCarRenter())){     //TODO change -> only equals 
+                    if(max<=customersReservationsNum.get(reservation.getCarRenter())){
                         max = customersReservationsNum.get(reservation.getCarRenter()); 
                         customerName = reservation.getCarRenter(); 
                     } 
                 } 
             } 
-        } 
+        //} 
         return customerName; 
     }
 

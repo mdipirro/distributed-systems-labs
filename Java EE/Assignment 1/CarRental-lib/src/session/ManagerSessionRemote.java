@@ -14,7 +14,7 @@ public interface ManagerSessionRemote {
      
     List<CarType> getCarTypes(String companyName); 
     int getNumberOfReservationsForCarType(String carType, String companyName); 
-    String getBestCustomer();
+    String getBestCustomer(String companyName);
     int getNumberOfReservationsBy(String name);
      
 } 
