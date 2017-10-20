@@ -30,7 +30,9 @@ public class Main extends AbstractTestAgency {
     @Override
     protected CarRentalSessionRemote getNewReservationSession(String name) throws Exception {
         InitialContext context = new InitialContext();
-        return (CarRentalSessionRemote) context.lookup(CarRentalSessionRemote.class.getName());
+        CarRentalSessionRemote bean = (CarRentalSessionRemote) context.lookup(CarRentalSessionRemote.class.getName());
+        bean.initialize(name);
+        return bean;
     }
 
     @Override
@@ -51,8 +53,7 @@ public class Main extends AbstractTestAgency {
     protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String region) throws Exception {
         CarRentalSessionRemote bean = (CarRentalSessionRemote)session;
         bean.createQuote(
-                new ReservationConstraints(start, end, carType, region),
-                name
+            new ReservationConstraints(start, end, carType, region)
         );
     }
 
