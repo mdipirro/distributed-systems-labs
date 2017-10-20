@@ -18,9 +18,14 @@ import rental.ReservationException;
 @Stateful
 public class CarRentalSession implements CarRentalSessionRemote {
     
+    private String clientName;
     private List<Quote> quotes;
     
-    public CarRentalSession() {
+    public CarRentalSession() {}
+    
+    @Override
+    public void initialize(String clientName) {
+        this.clientName = clientName;
         quotes = new ArrayList<Quote>();
     }
 
@@ -30,7 +35,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public Quote createQuote(ReservationConstraints constraints, String guest)
+    public Quote createQuote(ReservationConstraints constraints)
     throws ReservationException {
         boolean companyFound = false;
         Iterator<CarRentalCompany> iterator = RentalStore.getRentals().values().iterator();
@@ -42,7 +47,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
                     company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
         }
         if (company != null) { // A company has been found
-            Quote quote = company.createQuote(constraints, guest);
+            Quote quote = company.createQuote(constraints, clientName);
             quotes.add(quote);
             return quote;
         }
