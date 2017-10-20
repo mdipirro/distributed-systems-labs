@@ -70,4 +70,14 @@ public class Main extends AbstractTestAgency {
     protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
         return ((ManagerSessionRemote)ms).getNumberOfReservationsBy(clientName);
     }
+
+     @Override
+    protected String getBestCustomer(Object ms, String carRentalName) {
+        return ((ManagerSessionRemote)ms).getBestCustomer(carRentalName);
+    }    
+
+    @Override
+    protected List getCarTypes(Object ms, String carRentalName){
+        return ((ManagerSessionRemote)ms).getCarTypes(carRentalName);
+    }
 }

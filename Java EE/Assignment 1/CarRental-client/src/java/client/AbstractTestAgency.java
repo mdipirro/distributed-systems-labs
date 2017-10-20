@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import rental.CarType;
 import rental.Reservation;
 
 /**
@@ -27,9 +28,15 @@ import rental.Reservation;
  *
  * BMR
  * Print all reservations of a client
+ * 
+ * BMB
+ * get best customer (concrete company)
+ * 
+ * BMCT
+ * get list of CarTypes (concrete company)
  *
- * BS 
- * Create a reservation session  
+ * BS
+ * Create a reservation session 
  *
  * c
  * Modifier to indicate that the according command will fail
@@ -119,15 +126,16 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception;
-    
+
     /**
      * Get the the best customer (across whole rental agency).
      *
      * @param ms manager session
+     * @param carRentalName name of the rental company
      * @return name of best customer
      */
-    protected abstract String getBestCustomer(ManagerSession ms);
-    
+    protected abstract String getBestCustomer(ManagerSession ms, String carRentalName);
+
     /**
      * Get the list of car types for a particular car rental company
      *
@@ -193,11 +201,32 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
         } else if (cmd.equals("BS")) {
             try {
                 sessions.put(name, getNewReservationSession(name));
-			} catch (Exception e) { throw new ApplicationException(e); }
+            } catch (Exception e) {
+                throw new ApplicationException(e);
+            }
+        } else if (cmd.equals("BMB")) {
+            try{
+                ManagerSession aMgmtSession = getNewManagerSession("CarRent", name);
+                System.out.println("Best customer in company " + name + " is :\t" + getBestCustomer(aMgmtSession, name));
+                System.out.println();
+            }catch (Exception ex) {
+                throw new ApplicationException(ex);
+            }
+        }else if (cmd.equals("BMCT")) {
+            try{
+                ManagerSession aMgmtSession = getNewManagerSession("CarRent", name);
+                System.out.println("CarTypes for company " + name + "  :");
+                for(CarType type: getCarTypes(aMgmtSession, name)){
+                    System.out.println(type);
+                }
+                System.out.println();
+            }catch (Exception ex) {
+                throw new ApplicationException(ex);
+            }
         } else {
             throw new IllegalArgumentException("Unknown command");
-                }
             }
+    }
 
     private void assessTotalReservations(String name, StringTokenizer scriptReader) throws Exception {
         ManagerSession rental = getNewManagerSession(name, name);
