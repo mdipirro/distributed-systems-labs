@@ -1,0 +1,20 @@
+\section{Design decisions}
+\subsection{Remote and Serializable classes}
+The three interfaces defined in the \texttt{session} package are remotely accessible (i.e. they are stereotyped with \texttt{$<<$Remote$>>$}) in the class diagram. This design choice follows the Java RMI's standard mandate. After defining the interfaces as \texttt{$<<$Remote$>>$} we can register their concrete implementation to the \texttt{rmiregister}. This allows the client to ignore any implementation details and to act only considering the remote interface. The actual code can be dynamically downloaded or distributed as a \texttt{.jar} file.
+
+We made serializable (i.e. stereotyped as \texttt{$<<$Serializable$>>$}) only the classes intended to be marshaled and unmarshaled. These classes do not include the remote accessible ones, since for them Java RMI sends a remote reference and not an object copy. Below is a list of the serializable classes.
+\begin{itemize}
+	\item \texttt{ReservationException}
+	\item \texttt{ReservationConstraint}
+	\item \texttt{CarType}
+	\item \texttt{Quote}
+	\item \texttt{Reservation}
+\end{itemize}
+Instances of these classes are used as parameters or return values by remote object's methods. As mentioned before, Java RMI uses a pass-by-value semantics for non-remote objects, which involves marshaling and unmarshaling. Since instances of the other classes in the \texttt{rental} package are not sent over the network, those classes do not implement the \texttt{Serializable} interface. 
+
+\subsection{Location and registration of remote objects}
+%TODO
+
+\subsection{Sessions life time management}
+
+\subsection{Thread synchronization}
