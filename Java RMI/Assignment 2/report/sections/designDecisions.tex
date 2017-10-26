@@ -8,7 +8,7 @@ We made serializable (i.e. stereotyped as \texttt{$<<$Serializable$>>$}) only th
 \subsection{Location of remote objects} %TODO
 
 \subsection{Registration of remote objects}
-We register to the built-in RMI registry an instance of \texttt{RentalSessionManagerRemote} and an instance of \texttt{ManagerSession}. Since these two objects cannot be obtained in other ways, it is necessary to expose them using the RMI registry. On the contrary, we do not expose instances of \texttt{RentalSession}. Instances of this class are returned after an invocation of \texttt{RentalSessionManagerRemote.add}, which creates an unique session for a certain renter. Providing the access to an instance of this class via the RMI register would be wrong, since a rental session does not exists without a binding with a renter (i.e. the client). 
+We register to the built-in RMI registry an instance of \texttt{RentalSessionManagerRemote} and an instance of \texttt{ManagerSession}. Since these two objects cannot be obtained in other ways, it is necessary to expose them using the RMI registry. On the contrary, we do not expose instances of \texttt{RentalSession}. Instances of this class are returned after an invocation of \texttt{RentalSessionManagerRemote.add}, which creates an unique session for a certain renter. Providing the access to an instance of this class via the RMI register would be wrong, since a rental session does not exist without a binding with a renter (i.e. the client). 
 % TODO CarRentalCompany remote??
 
 \subsection{Sessions life time management}
