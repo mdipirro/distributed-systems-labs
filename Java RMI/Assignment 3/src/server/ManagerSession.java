@@ -6,7 +6,7 @@ import rentalstore.NamingService;
 import java.rmi.RemoteException;
 import java.util.*;
 
-public class ManagerSession implements ManagerSessionI {
+public class ManagerSession implements ManagerSessionRemote {
     @Override
     public void register(CarRentalCompany company) throws RemoteException {
         // TODO

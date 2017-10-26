@@ -2,7 +2,7 @@ package client;
 
 import rental.CarRentalCompany;
 import rental.CarType;
-import server.ManagerSessionI;
+import server.ManagerSessionRemote;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -10,7 +10,7 @@ import java.rmi.registry.Registry;
 
 public class Client {
 
-    private ManagerSessionI managerSession;
+    private ManagerSessionRemote managerSession;
 
     public static void main(String[] args) {
         Client main = new Client();
@@ -22,7 +22,7 @@ public class Client {
         try {
             System.setSecurityManager(null);
             registry = LocateRegistry.getRegistry();
-            managerSession = (ManagerSessionI) registry.lookup("MANAGER_SESSION");
+            managerSession = (ManagerSessionRemote) registry.lookup("MANAGER_SESSION");
         } catch (Exception e) {
             System.err.println("EXCEPTION during client creation:");
             e.printStackTrace();

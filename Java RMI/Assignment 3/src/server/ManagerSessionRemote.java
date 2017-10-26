@@ -7,7 +7,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface ManagerSessionI extends Remote {
+public interface ManagerSessionRemote extends Remote {
     void register (CarRentalCompany company) throws RemoteException;
     void unregister (String companyName) throws RemoteException;
     List<CarRentalCompany> getRentals() throws RemoteException;

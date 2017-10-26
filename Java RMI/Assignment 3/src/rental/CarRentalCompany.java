@@ -145,7 +145,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	}
 
 	// Implementation can be subject to different pricing strategies
-	private double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
+	public double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
 		return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime())
 						/ (1000 * 60 * 60 * 24D));
 	}
