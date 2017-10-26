@@ -1,11 +1,15 @@
 \section{Design decisions}
 \subsection{Remote and Serializable classes}
-The three interfaces defined in the \texttt{session} package are remotely accessible (i.e. they are stereotyped with \texttt{$<<$Remote$>>$}) in the class diagram. This design choice follows the Java RMI's standard mandate. After defining the interfaces as \texttt{$<<$Remote$>>$} we can register their concrete implementation to the \texttt{rmiregister}. This allows the client to ignore any implementation details and to act only considering the remote interface. The actual code can be dynamically downloaded or distributed as a \texttt{.jar} file.
+The three interfaces defined in the \texttt{session} package are remotely accessible (i.e. they are stereotyped with \texttt{$<<$Remote$>>$}) in the class diagram. This design choice follows the Java RMI's standard mandate. After defining the interfaces as \texttt{$<<$Remote$>>$} we can use them as remote objects. This allows the client to ignore any implementation details and to act only considering the remote interface. The actual code can be dynamically downloaded or distributed as a \texttt{.jar} file.
 
 We made serializable (i.e. stereotyped as \texttt{$<<$Serializable$>>$}) only the classes intended to be marshaled and unmarshaled. These classes do not include the remote accessible ones, since for them Java RMI sends a remote reference and not an object copy. The following classes are serializable: \texttt{ReservationException}, \texttt{ReservationConstraint}, \texttt{CarType}, \texttt{Quote}, \texttt{Reservation}. Instances of these classes are used as parameters or return values by remote object's methods. As mentioned before, Java RMI uses a pass-by-value semantics for non-remote objects, which involves marshaling and unmarshaling. Since instances of the other classes in the \texttt{rental} package are not sent over the network, those classes do not implement the \texttt{Serializable} interface. 
+%TODO CarRentalCompany and Car remote?? -> Probably CarRentalCompany should be a remote object as in the first assignmente (and they say that different companies may run on different servers)
 
-\subsection{Location and registration of remote objects}
-%TODO
+\subsection{Location of remote objects} %TODO
+
+\subsection{Registration of remote objects}
+We register to the built-in RMI registry an instance of \texttt{RentalSessionManagerRemote} and an instance of \texttt{ManagerSession}. Since these two objects cannot be obtained in other ways, it is necessary to expose them using the RMI registry. On the contrary, we do not expose instances of \texttt{RentalSession}. Instances of this class are returned after an invocation of \texttt{RentalSessionManagerRemote.add}, which creates an unique session for a certain renter. Providing the access to an instance of this class via the RMI register would be wrong, since a rental session does not exists without a binding with a renter (i.e. the client). 
+% TODO CarRentalCompany remote??
 
 \subsection{Sessions life time management}
 The rental session keeps a conversational state and it is unique in respect of a client. \texttt{SessionManager} acts as a naming service for the rental sessions and enables a renter to create their own session. At the end of their work, the renter can end the session. The ending causes the deletion of the kept state, if any. This means if there are some unconfirmed quotes when the client closes the session, they are removed. We binds clients and session via a \texttt{Map$<$String, RentalSession$>$}, where the \texttt{String} represents the client's name, supposed to be unique.
