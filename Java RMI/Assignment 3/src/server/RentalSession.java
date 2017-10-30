@@ -2,39 +2,57 @@ package server;
 
 import rental.*;
 import rentalstore.NamingService;
+import rentalstore.NamingServiceRemote;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 
 public class RentalSession implements RentalSessionRemote {
 
     private String clientName;
     private List<Quote> quotes;
+    private NamingServiceRemote namingService;
 
     public RentalSession(String clientName) {
         this.clientName = clientName;
         quotes = new LinkedList<>();
+        System.setSecurityManager(null);
+        try {
+            Registry registry = LocateRegistry.getRegistry();
+            namingService = (NamingServiceRemote)
+                    registry.lookup(RentalServer.RENTAL_SESSION_MANAGER_NAME);
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public Quote createQuote(ReservationConstraints constraints) throws ReservationException, RemoteException {
-        boolean companyFound = false;
-        Iterator<CarRentalCompany> iterator = NamingService.getRentals().values().iterator();
-        CarRentalCompany company = null;
-        // Look for a company having the requested region
-        while (iterator.hasNext() && !companyFound) {
-            company = iterator.next();
-            companyFound = (company.hasRegion(constraints.getRegion())) &&
-                    company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
-        }
+        CarRentalCompanyRemote company = findSuitableCompany(constraints);
         if (company != null) { // A company has been found
             Quote quote = company.createQuote(constraints, clientName);
             quotes.add(quote);
             return quote;
         }
-        // No companies with the requested region, throw an exception
         throw new ReservationException("No available company with the "
-                + "requested region <" + constraints.getRegion() + ">");
+                + "requested constraints <" + constraints.getRegion() + ">");
+    }
+
+    private CarRentalCompanyRemote findSuitableCompany(ReservationConstraints constraints) throws RemoteException {
+        boolean companyFound = false;
+        Iterator<CarRentalCompanyRemote> iterator = namingService.getRentals().values().iterator();
+        CarRentalCompanyRemote company = null;
+        while (iterator.hasNext() && !companyFound) {
+            company = iterator.next();
+            companyFound = (company.hasRegion(constraints.getRegion())) &&
+                    company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
+        }
+        return company;
     }
 
     @Override
@@ -52,13 +70,13 @@ public class RentalSession implements RentalSessionRemote {
             for (Quote quote : quotes) {
                 failed = quote;
                 reservations.add(
-                        NamingService.getRental(quote.getRentalCompany()).confirmQuote(quote)
+                        namingService.getRental(quote.getRentalCompany()).confirmQuote(quote)
                 );
             }
             return reservations;
         } catch (ReservationException exc) {
             for (Reservation reservation : reservations) {
-                NamingService.getRental(reservation.getRentalCompany()).cancelReservation(reservation);
+                namingService.getRental(reservation.getRentalCompany()).cancelReservation(reservation);
             }
             quotes.remove(failed);
             throw exc;
@@ -68,7 +86,7 @@ public class RentalSession implements RentalSessionRemote {
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException {
         List<CarType> availableCarTypes = new ArrayList<CarType>();
-        for (CarRentalCompany company : NamingService.getRentals().values()) {
+        for (CarRentalCompanyRemote company : namingService.getRentals().values()) {
             availableCarTypes.addAll(company.getAvailableCarTypes(start, end));
         }
         return availableCarTypes;
@@ -77,8 +95,8 @@ public class RentalSession implements RentalSessionRemote {
     @Override
     public CarType getCheapestCarType(Date start, Date end) throws RemoteException {
         CarType cheapest = null;
-        double minPrice = 0;
-        for (CarRentalCompany company : NamingService.getRentals().values()) {
+        double minPrice = Double.MAX_VALUE;
+        for (CarRentalCompanyRemote company : namingService.getRentals().values()) {
             for (CarType carType : company.getAllCarTypes()) {
                 double actualPrice = company.calculateRentalPrice(carType.getRentalPricePerDay(), start, end);
                 if (actualPrice < minPrice) {
