@@ -39,7 +39,7 @@ public class Client extends AbstractTestManagement {
 
     @Override
     protected Set<String> getBestClients(Object ms) throws Exception {
-        return ((ManagerSessionRemote)ms).getBestCostumer();
+        return ((ManagerSessionRemote)ms).getBestCostumers();
     }
 
     @Override
@@ -50,6 +50,11 @@ public class Client extends AbstractTestManagement {
     @Override
     protected CarType getMostPopularCarTypeIn(Object ms, String carRentalCompanyName, int year) throws Exception {
         return ((ManagerSessionRemote)ms).getMostPopularCarType(carRentalCompanyName, year);
+    }
+
+    @Override
+    protected String getMostPopularCarRentalCompany(Object ms) throws Exception {
+        return ((ManagerSession)ms).getMostPopularCarRentalCompany();
     }
 
     @Override

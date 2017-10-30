@@ -57,7 +57,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public Set<String> getBestCostumer() throws RemoteException {
+    public Set<String> getBestCostumers() throws RemoteException {
         Set<String> bestCustomers = new HashSet<String>();
         int max = 0;
         Map<String, Integer> customersReservationsNum = new HashMap<>();
@@ -109,4 +109,22 @@ public class ManagerSession implements ManagerSessionRemote {
         }
         return mostPopular;
     }
+
+    @Override
+    public String getMostPopularCarRentalCompany() throws RemoteException {
+        int max = 0;
+        String mostPopular = null;
+        for (CarRentalCompanyRemote company: getNamingService().getRentals().values()){
+            int numberOfReservation = 0;
+            for (Car car : company.getCars()) {
+                numberOfReservation+=car.getReservations().size();
+            }
+            if(numberOfReservation > max){
+                max = numberOfReservation;
+                mostPopular = company.getName();
+            }
+        }
+        return mostPopular;
+    }
+
 }

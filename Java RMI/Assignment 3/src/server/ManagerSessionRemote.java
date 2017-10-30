@@ -15,6 +15,7 @@ public interface ManagerSessionRemote extends Remote {
     List<CarRentalCompanyRemote> getRentals() throws RemoteException;
     List<CarType> getCarTypesByCompany(String companyName) throws RemoteException;
     int getNumberOfReservations(String carType, String companyName) throws RemoteException;
-    Set<String> getBestCostumer() throws RemoteException;
+    Set<String> getBestCostumers() throws RemoteException;
     CarType getMostPopularCarType(String companyName, int year) throws RemoteException;
+    String getMostPopularCarRentalCompany() throws RemoteException;
 }
