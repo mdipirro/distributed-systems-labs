@@ -2,13 +2,13 @@ package rentalstore;
 
 import rental.Car;
 import rental.CarRentalCompany;
+import rental.CarRentalCompanyRemote;
 import rental.CarType;
-import rental.ReservationException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,19 +18,21 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class NamingService {
+public class NamingService implements NamingServiceRemote {
 
-    private static Map<String, CarRentalCompany> rentals;
+    private Map<String, CarRentalCompanyRemote> rentals;
 
-    public static CarRentalCompany getRental(String company) {
-        CarRentalCompany out = NamingService.getRentals().get(company);
+    @Override
+    public CarRentalCompanyRemote getRental(String company) {
+        CarRentalCompanyRemote out = getRentals().get(company);
         if (out == null) {
             throw new IllegalArgumentException("Company doesn't exist!: " + company);
         }
         return out;
     }
-    
-    public static synchronized Map<String, CarRentalCompany> getRentals(){
+
+    @Override
+    public Map<String, CarRentalCompanyRemote> getRentals(){
         if(rentals == null){
             rentals = new HashMap<>();
             loadRental("hertz.csv");
@@ -39,7 +41,17 @@ public class NamingService {
         return rentals;
     }
 
-    public static void loadRental(String datafile) {
+    @Override
+    public void addCompany(CarRentalCompanyRemote company) throws RemoteException {
+        rentals.put(company.getName(), company);
+    }
+
+    @Override
+    public void removeCompany(String companyName) {
+        rentals.remove(companyName);
+    }
+
+    private void loadRental(String datafile) {
         try {
             CrcData data = loadData(datafile);
             CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
@@ -53,7 +65,7 @@ public class NamingService {
 
     }
 
-    public static CrcData loadData(String datafile) throws IOException {
+    private CrcData loadData(String datafile) throws IOException {
 
         CrcData out = new CrcData();
         int nextuid = 0;
@@ -95,7 +107,7 @@ public class NamingService {
 
         return out;
     }
-    
+
     static class CrcData {
             public List<Car> cars = new LinkedList<Car>();
             public String name;
