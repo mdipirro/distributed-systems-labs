@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany implements CarRentalCompanyI, Serializable {
+public class CarRentalCompany implements CarRentalCompanyRemote, Serializable {
+    // TODO Ok Serializable??
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
@@ -40,6 +41,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	 * NAME *
 	 ********/
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -58,7 +60,8 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
     public List<String> getRegions() {
         return this.regions;
     }
-    
+
+    @Override
     public boolean hasRegion(String region) {
         return this.regions.contains(region);
     }
@@ -67,6 +70,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	 * CAR TYPES *
 	 *************/
 
+	@Override
 	public Collection<CarType> getAllCarTypes() {
 		return carTypes.values();
 	}
@@ -78,6 +82,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	}
 	
 	// mark
+    @Override
 	public boolean isAvailable(String carTypeName, Date start, Date end) {
 		logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
 		if(carTypes.containsKey(carTypeName)) {
@@ -86,7 +91,8 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 			throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
 		}
 	}
-	
+
+	@Override
 	public Set<CarType> getAvailableCarTypes(Date start, Date end) {
 		Set<CarType> availableCarTypes = new HashSet<CarType>();
 		for (Car car : cars) {
@@ -101,6 +107,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	 * CARS *
 	 *********/
 
+	@Override
 	public List<Car> getCars() {
 		return cars;
 	}
@@ -145,6 +152,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 	}
 
 	// Implementation can be subject to different pricing strategies
+    @Override
 	public double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
 		return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime())
 						/ (1000 * 60 * 60 * 24D));
@@ -163,6 +171,7 @@ public class CarRentalCompany implements CarRentalCompanyI, Serializable {
 		return res;
 	}
 
+	@Override
 	public void cancelReservation(Reservation res) {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
 		getCar(res.getCarId()).removeReservation(res);
