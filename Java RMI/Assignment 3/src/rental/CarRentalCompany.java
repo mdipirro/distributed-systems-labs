@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany implements CarRentalCompanyRemote, Serializable {
+public class CarRentalCompany implements CarRentalCompanyRemote {
     // TODO Ok Serializable??
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
@@ -65,6 +65,9 @@ public class CarRentalCompany implements CarRentalCompanyRemote, Serializable {
     public boolean hasRegion(String region) {
         return this.regions.contains(region);
     }
+
+    @Override
+    public boolean hasCarType(String carType) {return carTypes.containsKey(carType);}
 	
 	/*************
 	 * CAR TYPES *
@@ -72,7 +75,7 @@ public class CarRentalCompany implements CarRentalCompanyRemote, Serializable {
 
 	@Override
 	public Collection<CarType> getAllCarTypes() {
-		return carTypes.values();
+		return new LinkedList<>(carTypes.values());
 	}
 	
 	public CarType getCarType(String carTypeName) {

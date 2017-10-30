@@ -15,6 +15,7 @@ public interface CarRentalCompanyRemote extends Remote {
     String getName() throws RemoteException;
     boolean isAvailable(String carTypeName, Date start, Date end) throws RemoteException;
     boolean hasRegion(String region) throws RemoteException;
+    boolean hasCarType(String carType) throws RemoteException;
     void cancelReservation(Reservation res) throws RemoteException;
     Collection<CarType> getAllCarTypes() throws RemoteException;
     double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) throws RemoteException;
