@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,7 +56,9 @@ public class NamingService implements NamingServiceRemote {
         try {
             CrcData data = loadData(datafile);
             CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
-            rentals.put(data.name, company);
+            CarRentalCompanyRemote stub = (CarRentalCompanyRemote)
+                UnicastRemoteObject.exportObject(company, 0);
+            rentals.put(data.name, stub);
             Logger.getLogger(NamingService.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
         } catch (NumberFormatException ex) {
             Logger.getLogger(NamingService.class.getName()).log(Level.SEVERE, "bad file", ex);
