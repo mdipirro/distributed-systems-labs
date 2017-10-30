@@ -1,7 +1,6 @@
 package server;
 
 import rental.*;
-import rentalstore.NamingService;
 import rentalstore.NamingServiceRemote;
 
 import java.rmi.NotBoundException;
@@ -23,7 +22,7 @@ public class RentalSession implements RentalSessionRemote {
         try {
             Registry registry = LocateRegistry.getRegistry();
             namingService = (NamingServiceRemote)
-                    registry.lookup(RentalServer.RENTAL_SESSION_MANAGER_NAME);
+                    registry.lookup(RentalServer.NAMING_SERVICE_NAME);
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (RemoteException e) {
@@ -50,6 +49,7 @@ public class RentalSession implements RentalSessionRemote {
         while (iterator.hasNext() && !companyFound) {
             company = iterator.next();
             companyFound = (company.hasRegion(constraints.getRegion())) &&
+                    company.hasCarType(constraints.getCarType()) &&
                     company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
         }
         return company;
@@ -61,8 +61,8 @@ public class RentalSession implements RentalSessionRemote {
     }
 
     @Override
-    public List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
-        // Allocate a list of reservation with the same siza as quotes
+    public synchronized List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
+        // Allocate a list of reservation with the same size as quotes
         List<Reservation> reservations = new ArrayList<Reservation>(quotes.size());
         Quote failed = null;
         try {
@@ -93,15 +93,19 @@ public class RentalSession implements RentalSessionRemote {
     }
 
     @Override
-    public CarType getCheapestCarType(Date start, Date end) throws RemoteException {
+    public CarType getCheapestCarType(Date start, Date end, String region) throws RemoteException {
         CarType cheapest = null;
         double minPrice = Double.MAX_VALUE;
         for (CarRentalCompanyRemote company : namingService.getRentals().values()) {
-            for (CarType carType : company.getAllCarTypes()) {
-                double actualPrice = company.calculateRentalPrice(carType.getRentalPricePerDay(), start, end);
-                if (actualPrice < minPrice) {
-                    minPrice = actualPrice;
-                    cheapest = carType;
+            if (company.hasRegion(region)) {
+                for (CarType carType : company.getAllCarTypes()) {
+                    if (company.isAvailable(carType.getName(), start, end)) {
+                        double actualPrice = carType.getRentalPricePerDay();//company.calculateRentalPrice(carType.getRentalPricePerDay(), start, end);
+                        if (actualPrice < minPrice) {
+                            minPrice = actualPrice;
+                            cheapest = carType;
+                        }
+                    }
                 }
             }
         }
