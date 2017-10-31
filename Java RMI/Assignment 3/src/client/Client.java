@@ -1,9 +1,12 @@
 package client;
 
+import configuration.AgencyConfigRMI;
 import rental.CarType;
 import rental.Reservation;
 import rental.ReservationConstraints;
-import server.*;
+import session.AgencySessionManagerRemote;
+import session.ManagerSessionRemote;
+import session.RentalSessionRemote;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,9 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class Client extends AbstractTestManagement {
+public class Client extends AbstractTestManagement<RentalSessionRemote, ManagerSessionRemote>{
 
-    private RentalSessionManagerRemote rentalSessionManager;
+    private AgencySessionManagerRemote agencySessionManager;
     private ManagerSessionRemote managerSession;
 
     public static void main(String[] args) throws Exception {
@@ -27,10 +30,10 @@ public class Client extends AbstractTestManagement {
         try {
             System.setSecurityManager(null);
             registry = LocateRegistry.getRegistry();
-            rentalSessionManager = (RentalSessionManagerRemote)
-                    registry.lookup(RentalServer.RENTAL_SESSION_MANAGER_NAME);
+            agencySessionManager = (AgencySessionManagerRemote)
+                    registry.lookup(AgencyConfigRMI.AGENCY_SESSION_MANAGER_NAME);
             managerSession = (ManagerSessionRemote)
-                    registry.lookup(RentalServer.MANAGER_SESSION_NAME);
+                    registry.lookup(AgencyConfigRMI.MANAGER_SESSION);
         } catch (Exception e) {
             System.err.println("EXCEPTION during client creation:");
             e.printStackTrace();
@@ -38,54 +41,54 @@ public class Client extends AbstractTestManagement {
     }
 
     @Override
-    protected Set<String> getBestClients(Object ms) throws Exception {
-        return ((ManagerSessionRemote)ms).getBestCostumers();
+    protected Set<String> getBestClients(ManagerSessionRemote ms) throws Exception {
+        return ms.getBestCostumers();
     }
 
     @Override
-    protected String getCheapestCarType(Object o, Date start, Date end, String region) throws Exception {
-        return ((RentalSessionRemote)o).getCheapestCarType(start, end, region).getName();
+    protected String getCheapestCarType(RentalSessionRemote o, Date start, Date end, String region) throws Exception {
+        return o.getCheapestCarType(start, end, region).getName();
     }
 
     @Override
-    protected CarType getMostPopularCarTypeIn(Object ms, String carRentalCompanyName, int year) throws Exception {
-        return ((ManagerSessionRemote)ms).getMostPopularCarType(carRentalCompanyName, year);
+    protected CarType getMostPopularCarTypeIn(ManagerSessionRemote ms, String carRentalCompanyName, int year) throws Exception {
+        return ms.getMostPopularCarType(carRentalCompanyName, year);
     }
 
     @Override
-    protected String getMostPopularCarRentalCompany(Object ms) throws Exception {
-        return ((ManagerSession)ms).getMostPopularCarRentalCompany();
+    protected String getMostPopularCarRentalCompany(ManagerSessionRemote ms) throws Exception {
+        return ms.getMostPopularCarRentalCompany();
     }
 
     @Override
-    protected Object getNewReservationSession(String name) throws Exception {
-        return rentalSessionManager.add(name);
+    protected RentalSessionRemote getNewReservationSession(String name) throws Exception {
+        return agencySessionManager.getRentalSession(name);
     }
 
     @Override
-    protected Object getNewManagerSession(String name, String carRentalName) throws Exception {
+    protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
         return managerSession;
     }
 
     @Override
-    protected void checkForAvailableCarTypes(Object o, Date start, Date end) throws Exception {
-        ((RentalSessionRemote)o).getAvailableCarTypes(start, end);
+    protected void checkForAvailableCarTypes(RentalSessionRemote o, Date start, Date end) throws Exception {
+        for(CarType type : o.getAvailableCarTypes(start, end)){
+            System.out.println(type);
+        }
     }
 
     @Override
-    protected void addQuoteToSession(Object o, String name, Date start, Date end, String carType, String region) throws Exception {
-        ((RentalSessionRemote)o).createQuote(new ReservationConstraints(
-                start, end, carType, region
-        ));
+    protected void addQuoteToSession(RentalSessionRemote o, String name, Date start, Date end, String carType, String region) throws Exception {
+        o.createQuote(new ReservationConstraints(start, end, carType, region));
     }
 
     @Override
-    protected List<Reservation> confirmQuotes(Object o, String name) throws Exception {
-        return ((RentalSessionRemote)o).confirmQuotes();
+    protected List<Reservation> confirmQuotes(RentalSessionRemote o, String name) throws Exception {
+        return o.confirmQuotes();
     }
 
     @Override
-    protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
-        return ((ManagerSessionRemote)ms).getNumberOfReservations(carType, carRentalName);
+    protected int getNumberOfReservationsForCarType(ManagerSessionRemote ms, String carRentalName, String carType) throws Exception {
+        return ms.getNumberOfReservations(carType, carRentalName);
     }
 }
