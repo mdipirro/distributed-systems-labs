@@ -1,6 +1,10 @@
 package rental;
 
-import java.io.Serializable;
+import configuration.AgencyConfigRMI;
+import java.io.IOException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -12,9 +16,43 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import session.ManagerSessionRemote;
 
 public class CarRentalCompany implements CarRentalCompanyRemote {
-    // TODO Ok Serializable??
+    
+        public static void main(String[] args) throws ReservationException, NumberFormatException, IOException {
+            // for test purposes
+            ManagerSessionRemote manager = null;
+            System.setSecurityManager(null);
+            Registry registry;
+            CarRentalCompanyRemote stubRentalCompany = null;
+            
+            //Create new company
+            List<String> regions = new ArrayList<>();  
+            regions.add("Bratislava");  
+            regions.add("Antwerp");  
+            List<Car> cars = new ArrayList<>();  
+            cars.add(new Car(999, new CarType("Skodovka", 5, (float) 1.58, 50, true)));  
+            CarRentalCompany newCompany = new CarRentalCompany("Jakub", regions, cars); 
+            
+            try {
+                registry = LocateRegistry.getRegistry();
+                manager = (ManagerSessionRemote) registry.lookup(AgencyConfigRMI.MANAGER_SESSION);
+                stubRentalCompany = (CarRentalCompanyRemote) UnicastRemoteObject.exportObject(newCompany, 0);
+                registry.rebind(newCompany.getName(), stubRentalCompany); 
+            } catch (Exception e) {
+                System.err.println("EXCEPTION during CarRentalCOmpany creation:");
+                e.printStackTrace();
+            }
+            
+            //Register new companyTest
+            manager.register(stubRentalCompany);  
+            System.out.println("====================== Should be 3 !!! ===============================================");  
+            for(CarRentalCompanyRemote company : manager.getRentals())  
+                System.out.println(company.getName());
+            //manager.unregister(newCompany.getName()); 
+            System.out.println("====================================================================="); 
+        }
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
