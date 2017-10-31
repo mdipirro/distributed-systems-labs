@@ -1,33 +1,23 @@
-package server;
+package session;
 
 import rental.*;
-import rentalstore.NamingServiceRemote;
+import namingservice.NamingServiceRemote;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.*;
 
 public class RentalSession implements RentalSessionRemote {
 
     private String clientName;
-    private List<Quote> quotes;
     private NamingServiceRemote namingService;
+    private List<Quote> quotes;
+    private Date creationDate;
 
-    public RentalSession(String clientName) {
+    public RentalSession(String clientName, NamingServiceRemote namingService) {
         this.clientName = clientName;
-        quotes = new LinkedList<>();
-        System.setSecurityManager(null);
-        try {
-            Registry registry = LocateRegistry.getRegistry();
-            namingService = (NamingServiceRemote)
-                    registry.lookup(RentalServer.NAMING_SERVICE_NAME);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        this.namingService = namingService;
+        this.quotes = new LinkedList<>();
+        creationDate = new Date();
     }
 
     @Override
@@ -73,6 +63,7 @@ public class RentalSession implements RentalSessionRemote {
                         namingService.getRental(quote.getRentalCompany()).confirmQuote(quote)
                 );
             }
+            quotes.clear();
             return reservations;
         } catch (ReservationException exc) {
             for (Reservation reservation : reservations) {
@@ -110,5 +101,10 @@ public class RentalSession implements RentalSessionRemote {
             }
         }
         return cheapest;
+    }
+
+    @Override
+    public Date getCreationDate() throws RemoteException {
+        return creationDate;
     }
 }

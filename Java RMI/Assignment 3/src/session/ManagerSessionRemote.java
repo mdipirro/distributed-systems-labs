@@ -1,4 +1,4 @@
-package server;
+package session;
 
 import rental.CarRentalCompany;
 import rental.CarRentalCompanyRemote;

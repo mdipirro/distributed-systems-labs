@@ -1,53 +1,42 @@
-package server;
+package session;
 
 import rental.*;
-import rentalstore.NamingService;
-import rentalstore.NamingServiceRemote;
-
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.*;
+import namingservice.NamingServiceRemote;
 
 public class ManagerSession implements ManagerSessionRemote {
+    
+    NamingServiceRemote namingService;
 
-    private NamingServiceRemote getNamingService() throws RemoteException {
-        System.setSecurityManager(null);
-        Registry registry = LocateRegistry.getRegistry();
-        try {
-            return (NamingServiceRemote) registry.lookup(RentalServer.NAMING_SERVICE_NAME);
-        } catch (NotBoundException e) {
-            throw new RemoteException("Exception during NamingService lookup");
-        }
+    public ManagerSession(NamingServiceRemote namingService) {
+        this.namingService = namingService;
     }
 
     @Override
     public synchronized void register(CarRentalCompanyRemote company) throws RemoteException {
-        // TODO
-        getNamingService().addCompany(company);
+        namingService.addCompany(company);
     }
 
     @Override
     public synchronized void unregister(String companyName) throws RemoteException {
-        // TODO
-        getNamingService().removeCompany(companyName);
+        namingService.removeCompany(companyName);
     }
 
     @Override
     public List<CarRentalCompanyRemote> getRentals() throws RemoteException {
-        return new LinkedList<>(getNamingService().getRentals().values());
+        return new LinkedList<>(namingService.getRentals().values());
     }
 
     @Override
     public List<CarType> getCarTypesByCompany(String companyName) throws RemoteException {
-        return new LinkedList<>(getNamingService().getRental(companyName).getAllCarTypes());
+        return new LinkedList<>(namingService.getRental(companyName).getAllCarTypes());
     }
 
     @Override
     public int getNumberOfReservations(String carType, String companyName) throws RemoteException {
         int num = 0;
-        List<Car> cars = getNamingService().getRental(companyName).getCars();
+        List<Car> cars = namingService.getRental(companyName).getCars();
         for(Car car: cars){
             if(car.getType().getName().equals(carType)){
                 num += car.getReservations().size();
@@ -61,7 +50,7 @@ public class ManagerSession implements ManagerSessionRemote {
         Set<String> bestCustomers = new HashSet<String>();
         int max = 0;
         Map<String, Integer> customersReservationsNum = new HashMap<>();
-        for(CarRentalCompanyRemote company : getNamingService().getRentals().values()){
+        for(CarRentalCompanyRemote company : namingService.getRentals().values()){
             for(Car car: company.getCars()){
                 for(Reservation reservation : car.getReservations()){
                     if(customersReservationsNum.containsKey(reservation.getCarRenter())){
@@ -89,7 +78,7 @@ public class ManagerSession implements ManagerSessionRemote {
         int max = 0;
         CarType mostPopular = null;
         Calendar calendar = Calendar.getInstance();
-        for (Car car : getNamingService().getRental(companyName).getCars()) {
+        for (Car car : namingService.getRental(companyName).getCars()) {
             CarType carType = car.getType();
             for (Reservation reservation : car.getReservations()) {
                 calendar.setTime(reservation.getStartDate());
@@ -114,7 +103,7 @@ public class ManagerSession implements ManagerSessionRemote {
     public String getMostPopularCarRentalCompany() throws RemoteException {
         int max = 0;
         String mostPopular = null;
-        for (CarRentalCompanyRemote company: getNamingService().getRentals().values()){
+        for (CarRentalCompanyRemote company: namingService.getRentals().values()){
             int numberOfReservation = 0;
             for (Car car : company.getCars()) {
                 numberOfReservation+=car.getReservations().size();
