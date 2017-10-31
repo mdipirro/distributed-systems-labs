@@ -102,9 +102,4 @@ public class RentalSession implements RentalSessionRemote {
         }
         return cheapest;
     }
-
-    @Override
-    public Date getCreationDate() throws RemoteException {
-        return creationDate;
-    }
 }
