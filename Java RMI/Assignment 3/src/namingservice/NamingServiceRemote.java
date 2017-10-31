@@ -1,6 +1,5 @@
-package rentalstore;
+package namingservice;
 
-import rental.CarRentalCompany;
 import rental.CarRentalCompanyRemote;
 
 import java.rmi.Remote;

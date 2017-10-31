@@ -1,4 +1,4 @@
-package rentalstore;
+package namingservice;
 
 import rental.Car;
 import rental.CarRentalCompany;
@@ -22,6 +22,12 @@ import java.util.logging.Logger;
 public class NamingService implements NamingServiceRemote {
 
     private Map<String, CarRentalCompanyRemote> rentals;
+    
+    public NamingService(){
+        rentals = new HashMap<>();
+        loadRental("hertz.csv");
+        loadRental("dockx.csv");
+    }
 
     @Override
     public CarRentalCompanyRemote getRental(String company) {
@@ -34,11 +40,6 @@ public class NamingService implements NamingServiceRemote {
 
     @Override
     public Map<String, CarRentalCompanyRemote> getRentals(){
-        if(rentals == null){
-            rentals = new HashMap<>();
-            loadRental("hertz.csv");
-            loadRental("dockx.csv");
-        }
         return rentals;
     }
 
