@@ -14,12 +14,12 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public synchronized void register(CarRentalCompanyRemote company) throws RemoteException {
+    public void register(CarRentalCompanyRemote company) throws RemoteException {
         namingService.addCompany(company);
     }
 
     @Override
-    public synchronized void unregister(String companyName) throws RemoteException {
+    public void unregister(String companyName) throws RemoteException {
         namingService.removeCompany(companyName);
     }
 

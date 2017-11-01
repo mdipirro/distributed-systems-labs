@@ -44,12 +44,12 @@ public class NamingService implements NamingServiceRemote {
     }
 
     @Override
-    public void addCompany(CarRentalCompanyRemote company) throws RemoteException {
+    public synchronized void addCompany(CarRentalCompanyRemote company) throws RemoteException {
         rentals.put(company.getName(), company);
     }
 
     @Override
-    public void removeCompany(String companyName) {
+    public synchronized void removeCompany(String companyName) {
         rentals.remove(companyName);
     }
 
