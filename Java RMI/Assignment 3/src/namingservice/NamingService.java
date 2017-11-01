@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +24,7 @@ public class NamingService implements NamingServiceRemote {
     private Map<String, CarRentalCompanyRemote> rentals;
     
     public NamingService(){
-        rentals = new HashMap<>();
+        rentals = new ConcurrentHashMap<String, CarRentalCompanyRemote>();
         loadRental("hertz.csv");
         loadRental("dockx.csv");
     }
@@ -44,12 +44,12 @@ public class NamingService implements NamingServiceRemote {
     }
 
     @Override
-    public synchronized void addCompany(CarRentalCompanyRemote company) throws RemoteException {
+    public void addCompany(CarRentalCompanyRemote company) throws RemoteException {
         rentals.put(company.getName(), company);
     }
 
     @Override
-    public synchronized void removeCompany(String companyName) {
+    public void removeCompany(String companyName) {
         rentals.remove(companyName);
     }
 

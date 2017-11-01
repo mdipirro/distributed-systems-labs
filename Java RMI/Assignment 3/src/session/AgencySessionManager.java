@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import namingservice.NamingServiceRemote;
 
@@ -14,12 +15,12 @@ public class AgencySessionManager implements AgencySessionManagerRemote {
     private NamingServiceRemote namingService;
 
     public AgencySessionManager(NamingServiceRemote namingService) {
-        this.rentalSessions = new HashMap<>();
+        this.rentalSessions = new ConcurrentHashMap<String, RentalSessionRemote>();
         this.namingService = namingService;
     }
 
     @Override
-    public synchronized RentalSessionRemote getRentalSession(String clientName)
+    public RentalSessionRemote getRentalSession(String clientName)
             throws RemoteException, IllegalArgumentException {
         if (clientName == null) {
             throw new IllegalArgumentException("Client's name must be non null!");
@@ -34,7 +35,7 @@ public class AgencySessionManager implements AgencySessionManagerRemote {
     }
 
     @Override
-    public synchronized void terminateRentalSession(String clientName) throws RemoteException {
+    public void terminateRentalSession(String clientName) throws RemoteException {
         // session will be a RentalSession's instance for sure: it is created and bound
         // in this class. The coupling remains the same
         RentalSession session = (RentalSession) rentalSessions.get(clientName);
