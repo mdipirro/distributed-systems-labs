@@ -11,17 +11,18 @@ public class RentalSession implements RentalSessionRemote {
     private String clientName;
     private NamingServiceRemote namingService;
     private List<Quote> quotes;
-    private Date creationDate;
+    private boolean terminated;
 
     public RentalSession(String clientName, NamingServiceRemote namingService) {
         this.clientName = clientName;
         this.namingService = namingService;
         this.quotes = new LinkedList<>();
-        creationDate = new Date();
+        terminated = false;
     }
 
     @Override
     public Quote createQuote(ReservationConstraints constraints) throws ReservationException, RemoteException {
+        checkForTermination();
         CarRentalCompanyRemote company = findSuitableCompany(constraints);
         if (company != null) { // A company has been found
             Quote quote = company.createQuote(constraints, clientName);
@@ -47,11 +48,13 @@ public class RentalSession implements RentalSessionRemote {
 
     @Override
     public List<Quote> getCurrentQuotes() throws RemoteException {
+        checkForTermination();
         return quotes;
     }
 
     @Override
     public synchronized List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
+        checkForTermination();
         // Allocate a list of reservation with the same size as quotes
         List<Reservation> reservations = new ArrayList<Reservation>(quotes.size());
         Quote failed = null;
@@ -76,6 +79,7 @@ public class RentalSession implements RentalSessionRemote {
 
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException {
+        checkForTermination();
         List<CarType> availableCarTypes = new ArrayList<CarType>();
         for (CarRentalCompanyRemote company : namingService.getRentals().values()) {
             availableCarTypes.addAll(company.getAvailableCarTypes(start, end));
@@ -85,6 +89,7 @@ public class RentalSession implements RentalSessionRemote {
 
     @Override
     public CarType getCheapestCarType(Date start, Date end, String region) throws RemoteException {
+        checkForTermination();
         CarType cheapest = null;
         double minPrice = Double.MAX_VALUE;
         for (CarRentalCompanyRemote company : namingService.getRentals().values()) {
@@ -101,5 +106,22 @@ public class RentalSession implements RentalSessionRemote {
             }
         }
         return cheapest;
+    }
+
+    @Override
+    public void removeQuotes() throws RemoteException {
+        checkForTermination();
+        quotes.clear();
+    }
+
+    void terminate() {
+        terminated = true;
+    }
+
+    private void checkForTermination() throws RemoteException {
+        if (terminated) {
+            throw new RemoteException("This RentalSession had been terminated. " +
+                    "Please create a new one");
+        }
     }
 }

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+
 import namingservice.NamingServiceRemote;
 
 public class AgencySessionManager implements AgencySessionManagerRemote {
@@ -34,6 +35,13 @@ public class AgencySessionManager implements AgencySessionManagerRemote {
 
     @Override
     public synchronized void terminateRentalSession(String clientName) throws RemoteException {
-        rentalSessions.remove(clientName);
+        // session will be a RentalSession's instance for sure: it is created and bound
+        // in this class. The coupling remains the same
+        RentalSession session = (RentalSession) rentalSessions.get(clientName);
+        if (session != null) {
+            session.removeQuotes();
+            session.terminate();
+            rentalSessions.remove(clientName);
+        }
     }
 }
