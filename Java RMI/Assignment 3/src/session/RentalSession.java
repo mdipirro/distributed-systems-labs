@@ -53,7 +53,7 @@ public class RentalSession implements RentalSessionRemote {
     }
 
     @Override
-    public synchronized List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
+    public List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
         checkForTermination();
         // Allocate a list of reservation with the same size as quotes
         List<Reservation> reservations = new ArrayList<Reservation>(quotes.size());
