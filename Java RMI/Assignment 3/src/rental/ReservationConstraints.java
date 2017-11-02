@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ReservationConstraints implements Serializable {
+
+    private static final long serialVersionUID = 2224121120212635918L;
     
     private Date startDate;
     private Date endDate;

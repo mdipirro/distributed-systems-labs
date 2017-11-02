@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class Quote implements Serializable {
 
+    private static final long serialVersionUID = 2303466133480229680L;
+
     private Date startDate;
     private Date endDate;
     private String carRenter;

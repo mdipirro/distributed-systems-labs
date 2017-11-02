@@ -3,6 +3,8 @@ package rental;
 import java.io.Serializable;
 
 public class CarType implements Serializable {
+
+    private static final long serialVersionUID = -3598537022569838643L;
     
     private String name;
     private int nbOfSeats;
