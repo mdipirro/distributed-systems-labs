@@ -1,0 +1,6 @@
+\section{Design overview}
+The main components of the \texttt{CarRental}'s distributed design are located in the \texttt{session} package. It comprises the three remotely accessible interfaces: \texttt{AgencySessionManagerRemote}, \texttt{RentalSessionRemote}, and \texttt{ManagerSessionRemote}. The first manages the association between renters and their rental session. A client may create a new \texttt{RentalSession} only via this manager. Lastly, \texttt{ManagerSessionRemote}, provides a stateless session for managing purposes. 
+
+\texttt{namingservice} contains the remote naming service used both by managers to register and unregister rental companies and for lookup purposes. We created a helper package, \texttt{configuration}, containing the class \texttt{AgencyConfigRMI}. This class is intended for test purposes only and contains the RMI-bound object's names.
+
+\texttt{rental} implements the application's business logic. Lastly, \texttt{client} and \texttt{server} contain the client and the server application, respectively.
