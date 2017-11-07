@@ -15,11 +15,33 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "CAR_RENTAL_COMPANY")
+@NamedQueries({
+    @NamedQuery(
+        name = "findAllRentalCompanies",
+        query = "SELECT c FROM CarRentalCompany c"
+    ),
+    @NamedQuery(
+        name = "findCarTypesByCompany",
+        query = "SELECT t"
+                + "FROM CarRentalCompany c, IN(c.carTypes) t"
+                + "WHERE c.name = :companyName"
+    ),
+    @NamedQuery(
+            name = "findNumberOfReservationByCarType",
+            query = "SELECT"
+                    + "FROM CarRentalCompany c, IN(c.carTypes) t, IN(c.cars) car"
+                    + "WHERE c.name = :companyName AND t.name = :carType"
+                    + "     AND car.type = t.type"
+    )
+})
+
 public class CarRentalCompany implements Serializable {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
