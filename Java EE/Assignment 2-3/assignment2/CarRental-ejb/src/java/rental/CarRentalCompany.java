@@ -189,14 +189,14 @@ public class CarRentalCompany implements Serializable {
         }
         Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
-        Reservation res = new Reservation(quote, car.getId());
+        Reservation res = new Reservation(quote, car);
         car.addReservation(res);
         return res;
     }
 
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
-        getCar(res.getCarId()).removeReservation(res);
+        res.getCarId().removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {

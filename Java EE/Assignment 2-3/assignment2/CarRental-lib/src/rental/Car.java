@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import rental.CarType;
+import rental.Reservation;
 
 @Entity
 @Table(name = "CAR")
@@ -24,7 +26,7 @@ public class Car implements Serializable {
     @ManyToOne
     private CarType type;
     
-    @OneToMany(cascade = ALL, mappedBy = "carid")
+    @OneToMany(cascade = ALL, mappedBy = "car")
     private Set<Reservation> reservations;
 
     /***************

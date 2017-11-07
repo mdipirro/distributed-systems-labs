@@ -11,9 +11,12 @@ import javax.persistence.Table;
 @Table(name = "RESERVATION")
 public class Reservation extends Quote {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
-    private int carId;
+    @ManyToOne
+    private Car car;
     
     /***************
      * CONSTRUCTOR *
@@ -22,19 +25,18 @@ public class Reservation extends Quote {
         super();
     }
     
-    public Reservation(Quote quote, int carId) {
+    public Reservation(Quote quote, Car car) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
-        this.carId = carId;
+        this.car = car;
     }
     
     /******
      * ID *
      ******/
     
-    @ManyToOne
-    public int getCarId() {
-    	return carId;
+    public Car getCarId() {
+    	return car;
     }
     
     /*************
@@ -47,8 +49,6 @@ public class Reservation extends Quote {
                 getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), getCarId(), getRentalPrice());
     }	
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public long getId() {
         return id;
     }
