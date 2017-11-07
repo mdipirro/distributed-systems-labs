@@ -1,5 +1,6 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,20 +9,44 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.persistence.CascadeType.ALL;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-public class CarRentalCompany {
+@Entity
+@Table(name = "CAR_RENTAL_COMPANY")
+public class CarRentalCompany implements Serializable {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+    @Id
     private String name;
+    
+    @OneToMany
     private List<Car> cars;
+    
+    @ManyToMany(cascade = ALL)
+    @JoinTable(
+            name = "COMPANIES_TYPES",
+            joinColumns = 
+                @JoinColumn(name = "COMPANY_ID", referencedColumnName = "NAME"),
+            inverseJoinColumns = 
+                @JoinColumn(name = "TYPE_ID", referencedColumnName = "NAME")
+    )
     private Set<CarType> carTypes = new HashSet<CarType>();
-	private List<String> regions;
+    private List<String> regions;
 
 	
     /***************
      * CONSTRUCTOR *
      ***************/
 
+    public CarRentalCompany() {}
+        
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
         setName(name);
@@ -58,7 +83,6 @@ public class CarRentalCompany {
     /*************
      * CAR TYPES *
      *************/
-    
     public Collection<CarType> getAllTypes() {
         return carTypes;
     }
@@ -74,7 +98,7 @@ public class CarRentalCompany {
     public boolean isAvailable(String carTypeName, Date start, Date end) {
         logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
         return getAvailableCarTypes(start, end).contains(getType(carTypeName));
-    }
+    }    
 
     public Set<CarType> getAvailableCarTypes(Date start, Date end) {
         Set<CarType> availableCarTypes = new HashSet<CarType>();
@@ -89,7 +113,6 @@ public class CarRentalCompany {
     /*********
      * CARS *
      *********/
-    
     public Car getCar(int uid) {
         for (Car car : cars) {
             if (car.getId() == uid) {
@@ -109,7 +132,7 @@ public class CarRentalCompany {
         return out;
     }
     
-     public Set<Car> getCars(String type) {
+    public Set<Car> getCars(String type) {
         Set<Car> out = new HashSet<Car>();
         for (Car car : cars) {
             if (type.equals(car.getType().getName())) {

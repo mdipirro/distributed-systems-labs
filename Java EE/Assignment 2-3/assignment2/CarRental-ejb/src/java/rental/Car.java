@@ -1,18 +1,37 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import static javax.persistence.CascadeType.ALL;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-public class Car {
+@Entity
+@Table(name = "CAR")
+public class Car implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    
+    @ManyToOne
     private CarType type;
+    
+    @OneToMany(cascade = ALL, mappedBy = "carid")
     private Set<Reservation> reservations;
 
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    public Car() {} // Empty constructor needed for making Car an Entity
     
     public Car(int uid, CarType type) {
     	this.id = uid;
@@ -23,7 +42,6 @@ public class Car {
     /******
      * ID *
      ******/
-    
     public int getId() {
     	return id;
     }
@@ -31,7 +49,6 @@ public class Car {
     /************
      * CAR TYPE *
      ************/
-    
     public CarType getType() {
         return type;
     }
