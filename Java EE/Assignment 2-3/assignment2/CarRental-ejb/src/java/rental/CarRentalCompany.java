@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.persistence.CascadeType.ALL;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -25,23 +26,53 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(
         name = "findAllRentalCompanies",
-        query = "SELECT c FROM CarRentalCompany c"
+        query = "SELECT company FROM CarRentalCompany company"
     ),
     @NamedQuery(
         name = "findCarTypesByCompany",
-        query = "SELECT t"
-                + "FROM CarRentalCompany c, IN(c.carTypes) t"
-                + "WHERE c.name = :companyName"
+        query = "SELECT t "
+                + "FROM CarRentalCompany company, IN(company.carTypes) t "
+                + "WHERE company.name = :companyName"
     ),
     @NamedQuery(
         name = "findNumberOfReservationByCarType",
-        query = "SELECT SUM(SIZE(car.reservations))"
-                + "FROM CarRentalCompany c, IN(c.carTypes) t, IN(c.cars) car"
-                + "WHERE c.name = :companyName AND t.name = :carType"
-                + "     AND car.type = t.type"
+        query = "SELECT SUM(SIZE(car.reservations)) "
+                + "FROM CarRentalCompany company, IN(company.carTypes) t, IN(company.cars) car "
+                + "WHERE company.name = :companyName AND t.name = :carType "
+                + "     AND car.type = t.name"
+    ),
+    @NamedQuery(
+        name = "findMostPopularCarType",
+        query = "SELECT car.type "
+                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "WHERE company.name = :companyName "
+                + "GROUP BY car.type "
+                + "HAVING COUNT(car.reservations) = (SELECT MAX(COUNT(c.reservations)) "
+                + "                                  FROM CarRentalCompany comp, IN(comp.cars) c "
+                + "                                  WHERE comp.name = :companyName "
+                + "                                  GROUP BY c.type) "
+    ), 
+    @NamedQuery(
+        name = "findCheapestCar",
+        query = "SELECT car.type "
+                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "WHERE :region MEMBER OF company.regions AND " // region constraint
+                + "car.type = :carType AND " // car type constraint
+                + "("
+                + " NOT EXISTS  (" // if there are no reservations ending after start
+                + "                 SELECT res.id "
+                + "                 FROM Reservation res "
+                + "                 WHERE res.endDate > :start "
+                + "             )"
+                + " AND "
+                + " NOT EXISTS  (" // if there are no reservations starting after end
+                + "                 SELECT res.id "
+                + "                 FROM Reservation res "
+                + "                 WHERE res.startDate < :end "
+                + "             )"
+                + ")" 
     )
 })
-
 public class CarRentalCompany implements Serializable {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
@@ -60,6 +91,7 @@ public class CarRentalCompany implements Serializable {
                 @JoinColumn(name = "TYPE_ID", referencedColumnName = "NAME")
     )
     private Set<CarType> carTypes = new HashSet<CarType>();
+    @ElementCollection
     private List<String> regions;
 
 	
@@ -218,7 +250,7 @@ public class CarRentalCompany implements Serializable {
 
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
-        res.getCarId().removeReservation(res);
+        res.getCar().removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {
