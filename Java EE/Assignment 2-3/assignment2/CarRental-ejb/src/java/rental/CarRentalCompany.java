@@ -34,11 +34,11 @@ import javax.persistence.Table;
                 + "WHERE c.name = :companyName"
     ),
     @NamedQuery(
-            name = "findNumberOfReservationByCarType",
-            query = "SELECT"
-                    + "FROM CarRentalCompany c, IN(c.carTypes) t, IN(c.cars) car"
-                    + "WHERE c.name = :companyName AND t.name = :carType"
-                    + "     AND car.type = t.type"
+        name = "findNumberOfReservationByCarType",
+        query = "SELECT SUM(SIZE(car.reservations))"
+                + "FROM CarRentalCompany c, IN(c.carTypes) t, IN(c.cars) car"
+                + "WHERE c.name = :companyName AND t.name = :carType"
+                + "     AND car.type = t.type"
     )
 })
 
