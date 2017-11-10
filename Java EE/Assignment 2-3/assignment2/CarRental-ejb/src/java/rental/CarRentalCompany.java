@@ -29,6 +29,19 @@ import javax.persistence.Table;
         query = "SELECT company FROM CarRentalCompany company"
     ),
     @NamedQuery(
+        name = "getCarTypes",
+        query = "SELECT company.carTypes "
+                + "FROM CarRentalCompany company "
+                + "WHERE company.name = :companyName"
+    ),
+    @NamedQuery(
+        name = "getCarIds",
+        query = "SELECT car.id "
+                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "WHERE company.name = :companyName AND "
+                + "      car.type = :carType"    
+    ),
+    @NamedQuery(
         name = "findCarTypesByCompany",
         query = "SELECT t "
                 + "FROM CarRentalCompany company, IN(company.carTypes) t "
@@ -36,10 +49,10 @@ import javax.persistence.Table;
     ),
     @NamedQuery(
         name = "findNumberOfReservationByCarType",
-        query = "SELECT SUM(SIZE(car.reservations)) "
+        query = "SELECT COUNT(car.reservations) "
                 + "FROM CarRentalCompany company, IN(company.carTypes) t, IN(company.cars) car "
-                + "WHERE company.name = :companyName AND t.name = :carType "
-                + "     AND car.type = t.name"
+                + "WHERE company.name = :companyName "
+                + "     AND car.type = :carType"
     ),
     @NamedQuery(
         name = "findMostPopularCarType",
@@ -53,12 +66,19 @@ import javax.persistence.Table;
                 + "                                  GROUP BY c.type) "
     ), 
     @NamedQuery(
-        name = "findCheapestCar",
+        name = "findCheapestCarType",
         query = "SELECT car.type "
                 + "FROM CarRentalCompany company, IN(company.cars) car "
                 + "WHERE :region MEMBER OF company.regions AND " // region constraint
                 + "car.type = :carType AND " // car type constraint
-                + "("
+                + "car.id NOT IN (" // availability
+                + " SELECT res.car.id "
+                + " FROM Reservation res "
+                + " WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
+                + "        (res.startDate <= :end AND res.endDate >= :end) "
+                + ") " 
+                /* more complex query
+                + "(" 
                 + " NOT EXISTS  (" // if there are no reservations ending after start
                 + "                 SELECT res.id "
                 + "                 FROM Reservation res "
@@ -70,7 +90,8 @@ import javax.persistence.Table;
                 + "                 FROM Reservation res "
                 + "                 WHERE res.startDate < :end "
                 + "             )"
-                + ")" 
+                + ") " */
+                + "ORDER BY car.type.rentalPricePerDay asc"
     )
 })
 public class CarRentalCompany implements Serializable {
@@ -163,6 +184,10 @@ public class CarRentalCompany implements Serializable {
         }
         return availableCarTypes;
     }
+    
+    public void addCarType(CarType carType) {
+        carTypes.add(carType);
+    }
 
     /*********
      * CARS *
@@ -204,6 +229,10 @@ public class CarRentalCompany implements Serializable {
             }
         }
         return availableCars;
+    }
+    
+    public void addCar(Car car) {
+        cars.add(car);
     }
 
     /****************
