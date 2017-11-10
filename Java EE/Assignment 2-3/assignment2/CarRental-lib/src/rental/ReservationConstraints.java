@@ -1,10 +1,13 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-public class ReservationConstraints {
+public class ReservationConstraints implements Serializable{
+
+    private static final long serialVersionUID = 7169407423347283573L;
     
     @Temporal(TemporalType.DATE)
     private Date startDate;

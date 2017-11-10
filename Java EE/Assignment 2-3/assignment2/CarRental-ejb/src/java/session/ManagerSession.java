@@ -143,6 +143,11 @@ public class ManagerSession implements ManagerSessionRemote {
 
         return out;
     }
+
+    @Override
+    public String test() {
+        return "Communication works!!!";
+    }
     
     static private class CrcData {
             public List<Car> cars = new LinkedList<Car>();

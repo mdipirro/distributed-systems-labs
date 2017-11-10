@@ -26,6 +26,8 @@ import javax.persistence.Table;
 )
 public class Reservation extends Quote {
 
+    private static final long serialVersionUID = 7888890731888905023L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

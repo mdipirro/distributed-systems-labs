@@ -20,13 +20,29 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import rental.Car;
+import rental.Car;
+import rental.CarType;
+import rental.CarType;
+import rental.Quote;
+import rental.Quote;
+import rental.Reservation;
+import rental.Reservation;
+import rental.ReservationConstraints;
+import rental.ReservationConstraints;
+import rental.ReservationException;
+import rental.ReservationException;
 
 @Entity
 @Table(name = "CAR_RENTAL_COMPANY")
 @NamedQueries({
     @NamedQuery(
         name = "findAllRentalCompanies",
-        query = "SELECT company FROM CarRentalCompany company"
+        query = "SELECT company.name FROM CarRentalCompany company"
+    ),
+     @NamedQuery(
+        name = "findRentalCompanyByName",
+        query = "SELECT company FROM CarRentalCompany company WHERE company.name = :companyName"
     ),
     @NamedQuery(
         name = "getCarTypes",
@@ -100,7 +116,7 @@ public class CarRentalCompany implements Serializable {
     @Id
     private String name;
     
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<Car> cars;
     
     @ManyToMany(cascade = ALL)
@@ -130,6 +146,10 @@ public class CarRentalCompany implements Serializable {
         for (Car car : cars) {
             carTypes.add(car.getType());
         }
+    }
+    
+    public Boolean hasRegion(String region){ 
+        return this.regions.contains(region); 
     }
 
     /********
@@ -167,7 +187,7 @@ public class CarRentalCompany implements Serializable {
             if(type.getName().equals(carTypeName))
                 return type;
         }
-        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);
+        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {
@@ -230,7 +250,7 @@ public class CarRentalCompany implements Serializable {
         }
         return availableCars;
     }
-    
+
     public void addCar(Car car) {
         cars.add(car);
     }
