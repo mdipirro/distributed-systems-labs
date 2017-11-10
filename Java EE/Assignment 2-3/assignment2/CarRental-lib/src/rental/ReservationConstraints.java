@@ -1,10 +1,14 @@
 package rental;
 
 import java.util.Date;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 public class ReservationConstraints {
     
+    @Temporal(TemporalType.DATE)
     private Date startDate;
+    @Temporal(TemporalType.DATE)
     private Date endDate;
     private String carType;
     private String region;

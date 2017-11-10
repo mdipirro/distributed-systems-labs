@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import rental.CarType;
-import rental.Reservation;
 
 @Entity
 @Table(name = "CAR")
@@ -26,6 +25,7 @@ public class Car implements Serializable {
     @ManyToOne
     private CarType type;
     
+    @ElementCollection
     @OneToMany(cascade = ALL, mappedBy = "car")
     private Set<Reservation> reservations;
 
