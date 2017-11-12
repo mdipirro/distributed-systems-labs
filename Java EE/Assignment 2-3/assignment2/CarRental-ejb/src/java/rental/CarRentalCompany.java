@@ -1,6 +1,5 @@
 package rental;
 
-import com.sun.scenario.effect.Merge;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -19,8 +18,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -84,7 +81,7 @@ import javax.persistence.Table;
                 + "WHERE :region MEMBER OF company.regions AND " // region constraint
                 + "car.type = :carType AND " // car type constraint
                 + "car.id NOT IN (" // availability
-                + " SELECT res.car.id "
+                + " SELECT res.carId "
                 + " FROM Reservation res "
                 + " WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
                 + "        (res.startDate <= :end AND res.endDate >= :end) "
@@ -277,14 +274,14 @@ public class CarRentalCompany implements Serializable {
         }
         Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
-        Reservation res = new Reservation(quote, car);
+        Reservation res = new Reservation(quote, car.getId());
         car.addReservation(res);
         return res;
     }
 
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
-        res.getCar().removeReservation(res);
+        getCar(res.getCarId()).removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {

@@ -62,14 +62,16 @@ public class ManagerSession implements ManagerSessionRemote {
     }
     
     @Override
-    public void addRentalCompany(String name, List<String> regions, List<Car> cars) {
-        CarRentalCompany company = new CarRentalCompany(name, regions, cars);
+    public void addRentalCompany(String name, List<String> regions) {
+        CarRentalCompany company = new CarRentalCompany(name, regions, new LinkedList<Car>());
         em.persist(company);
     }
     
     @Override
-    public void addCar(String companyName, Car car) {
+    public void addCar(String companyName, CarType carType) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
+        Car car = new Car();
+        car.setType(carType);
         company.addCar(car);
         em.persist(company);
     }

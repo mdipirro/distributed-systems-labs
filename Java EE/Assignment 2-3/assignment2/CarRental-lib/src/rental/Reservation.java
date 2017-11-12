@@ -13,16 +13,16 @@ import javax.persistence.Table;
 @NamedQuery(
     name = "findBestCostumers",
     query = "SELECT reservation.carRenter "
-            + "FROM Reservation reservation "
-            + "WHERE ("
-            + " SELECT COUNT(res.id) " // how many reservations for this renter?
-            + " FROM Reservation res "
-            + " WHERE res.carRenter = reservation.carRenter "
-            + ") = ("
-            + " SELECT MAX(COUNT(res.id)) " // maximum number of reservations
-            + " FROM Reservation res "
-            + " GROUP BY res.carRenter"
-            + ")"
+        + "FROM Reservation reservation "
+        + "WHERE ("
+        + " SELECT COUNT(res.id) " // how many reservations for this renter?
+        + " FROM Reservation res "
+        + " WHERE res.carRenter = reservation.carRenter "
+        + ") = ("
+        + " SELECT MAX(COUNT(res.id)) " // maximum number of reservations
+        + " FROM Reservation res "
+        + " GROUP BY res.carRenter"
+        + ")"
 )
 public class Reservation extends Quote {
 
@@ -30,8 +30,7 @@ public class Reservation extends Quote {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
-    @ManyToOne
-    private Car car;
+    private int carId;
     
     /***************
      * CONSTRUCTOR *
@@ -40,18 +39,18 @@ public class Reservation extends Quote {
         super();
     }
     
-    public Reservation(Quote quote, Car car) {
+    public Reservation(Quote quote, int carId) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
-        this.car = car;
+        this.carId = carId;
     }
     
     /******
      * ID *
      ******/
     
-    public Car getCar() {
-    	return car;
+    public int getCarId() {
+    	return carId;
     }
     
     /*************
@@ -61,6 +60,6 @@ public class Reservation extends Quote {
     @Override
     public String toString() {
         return String.format("Reservation for %s from %s to %s at %s\nCar type: %s\tCar: %s\nTotal price: %.2f", 
-                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), car.getId(), getRentalPrice());
+                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), carId, getRentalPrice());
     }
 }

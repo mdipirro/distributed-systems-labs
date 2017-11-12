@@ -3,9 +3,7 @@ package session;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
-import rental.Car;
 import rental.CarType;
-import rental.Reservation;
 
 @Remote
 public interface ManagerSessionRemote {
@@ -15,7 +13,7 @@ public interface ManagerSessionRemote {
     int getNumberOfReservations(String company, String type, int carId);
     int getNumberOfReservations(String company, String type);  
     void loadRental(String datafile);
-    void addRentalCompany(String name, List<String> regions, List<Car> cars);
-    void addCar(String companyName, Car car);
+    void addRentalCompany(String name, List<String> regions);
+    void addCar(String companyName, CarType carType);
     void addCarType(String companyName, CarType carType);
 }
