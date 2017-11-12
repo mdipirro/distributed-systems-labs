@@ -1,5 +1,6 @@
 package rental;
 
+import com.sun.scenario.effect.Merge;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -10,8 +11,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.DETACH;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -106,10 +112,10 @@ public class CarRentalCompany implements Serializable {
     @Id
     private String name;
     
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<Car> cars;
     
-    @OneToMany(cascade = ALL)
+    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.LAZY)
     private Set<CarType> carTypes = new HashSet<CarType>();
     @ElementCollection
     private List<String> regions;
