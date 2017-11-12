@@ -68,6 +68,18 @@ public class ManagerSession implements ManagerSessionRemote {
     }
     
     @Override
+    public void addRentalCompany(String name, List<String> regions, List<CarType> types) {
+        List<Car> cars = new LinkedList<Car>();
+        for (CarType type : types) {
+            Car car = new Car();
+            car.setType(type);
+            cars.add(car);
+        }
+        CarRentalCompany company = new CarRentalCompany(name, regions, cars);
+        em.persist(company);
+    }
+    
+    @Override
     public void addCar(String companyName, CarType carType) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
         Car car = new Car();
@@ -83,7 +95,7 @@ public class ManagerSession implements ManagerSessionRemote {
         em.persist(company);
     }
 
-    @Override
+    /*@Override
     public void loadRental(String datafile) {
         try {
             CrcData data = loadData(datafile);
@@ -142,5 +154,5 @@ public class ManagerSession implements ManagerSessionRemote {
             public List<Car> cars = new LinkedList<Car>();
             public String name;
             public List<String> regions =  new LinkedList<String>();
-    }
+    }*/
 }
