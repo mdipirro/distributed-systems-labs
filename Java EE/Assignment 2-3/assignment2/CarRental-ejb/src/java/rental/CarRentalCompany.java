@@ -15,7 +15,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -110,14 +109,7 @@ public class CarRentalCompany implements Serializable {
     @OneToMany
     private List<Car> cars;
     
-    @ManyToMany(cascade = ALL)
-    @JoinTable(
-            name = "COMPANIES_TYPES",
-            joinColumns = 
-                @JoinColumn(name = "COMPANY_ID", referencedColumnName = "NAME"),
-            inverseJoinColumns = 
-                @JoinColumn(name = "TYPE_ID", referencedColumnName = "NAME")
-    )
+    @OneToMany(cascade = ALL)
     private Set<CarType> carTypes = new HashSet<CarType>();
     @ElementCollection
     private List<String> regions;
