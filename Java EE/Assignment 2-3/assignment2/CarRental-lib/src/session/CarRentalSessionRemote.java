@@ -19,10 +19,12 @@ public interface CarRentalSessionRemote {
     
     public List<CarType> getAvailableCarTypes(Date start, Date end);
     
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException;
+    public Quote createQuote(ReservationConstraints constraints) throws ReservationException;   // TODO can I change it?
     
     public List<Quote> getCurrentQuotes();
     
     public List<Reservation> confirmQuotes() throws ReservationException;
+    
+    public String getCheapestCarTypes(Date start, Date end, String region);
     
 }

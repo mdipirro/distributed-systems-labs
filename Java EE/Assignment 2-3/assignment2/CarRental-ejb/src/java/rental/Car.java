@@ -7,6 +7,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,6 +24,8 @@ import rental.Reservation;
 @Table(name = "CAR")
 public class Car {
 
+    private static final long serialVersionUID = 5791793413315322288L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -30,7 +33,7 @@ public class Car {
     @ManyToOne(cascade = {PERSIST, MERGE, REFRESH}, fetch = FetchType.EAGER)
     private CarType type;
     
-    @ElementCollection
+    //@ElementCollection
     @OneToMany(cascade = ALL, mappedBy = "car")
     private Set<Reservation> reservations;
 
@@ -41,7 +44,7 @@ public class Car {
     public Car() {} // Empty constructor needed for making Car an Entity
     
     public Car(int uid, CarType type) {
-    	this.id = uid;
+    	//this.id = uid;
         this.type = type;
         this.reservations = new HashSet<Reservation>();
     }

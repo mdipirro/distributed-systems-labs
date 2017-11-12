@@ -17,4 +17,5 @@ public interface ManagerSessionRemote {
     void addRentalCompany(String name, List<String> regions, List<CarType> types);
     void addCar(String companyName, CarType carType);
     void addCarType(String companyName, CarType carType);
+    String test();
 }
