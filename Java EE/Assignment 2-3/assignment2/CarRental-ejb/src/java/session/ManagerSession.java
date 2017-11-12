@@ -47,26 +47,18 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public int getNumberOfReservations(String company, String type, int id) {
-        try {
-            return RentalStore.getRental(company).getCar(id).getReservations().size();
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
+        return em.createNamedQuery("getNumberOfReservationsByCar")
+                .setParameter("companyName", company)
+                .setParameter("carId", id)
+                .getFirstResult();
     }
 
     @Override
     public int getNumberOfReservations(String company, String type) {
-        Set<Reservation> out = new HashSet<Reservation>();
-        try {
-            for(Car c: RentalStore.getRental(company).getCars(type)){
-                out.addAll(c.getReservations());
-            }
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-        return out.size();
+        return em.createNamedQuery("getNumberOfReservationsByCarType")
+                .setParameter("companyName", company)
+                .setParameter("carType", type)
+                .getFirstResult();
     }
     
     @Override

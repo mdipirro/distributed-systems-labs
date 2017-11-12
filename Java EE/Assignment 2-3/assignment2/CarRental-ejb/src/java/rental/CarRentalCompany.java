@@ -48,9 +48,16 @@ import javax.persistence.Table;
                 + "WHERE company.name = :companyName"
     ),
     @NamedQuery(
-        name = "findNumberOfReservationByCarType",
+        name = "getNumberOfReservationsByCar",
         query = "SELECT COUNT(car.reservations) "
-                + "FROM CarRentalCompany company, IN(company.carTypes) t, IN(company.cars) car "
+                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "WHERE company.name = :companyName AND"
+                + "      car.id = :carId"
+    ),
+    @NamedQuery(
+        name = "getNumberOfReservationByCarType",
+        query = "SELECT COUNT(car.reservations) "
+                + "FROM CarRentalCompany company, IN(company.cars) car "
                 + "WHERE company.name = :companyName "
                 + "     AND car.type = :carType"
     ),
