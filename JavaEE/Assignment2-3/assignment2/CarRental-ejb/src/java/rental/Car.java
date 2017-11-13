@@ -1,6 +1,5 @@
 package rental;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,14 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import rental.CarType;
-import rental.Reservation;
 
 @Entity
 @Table(name = "CAR")
-public class Car implements Serializable {
-
-    private static final long serialVersionUID = 5791793413315322288L;
+public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

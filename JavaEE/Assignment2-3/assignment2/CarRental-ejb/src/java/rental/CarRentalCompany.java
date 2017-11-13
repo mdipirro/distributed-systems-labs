@@ -1,6 +1,5 @@
 package rental;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -103,7 +102,7 @@ import javax.persistence.Table;
                 + "ORDER BY car.type.rentalPricePerDay asc"
     )
 })
-public class CarRentalCompany implements Serializable {
+public class CarRentalCompany {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
     @Id
