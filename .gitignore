@@ -268,3 +268,14 @@ TSWLatexianTemp*
 
 # expex forward references with \gathertags
 *-tags.tex
+/Java EE/Assignment 2-3/assignment2/CarRental/nbproject/private/
+/Java EE/Assignment 2-3/assignment2/CarRental-client/nbproject/private/
+/Java EE/Assignment 2-3/assignment2/CarRental-ejb/nbproject/private/
+/Java EE/Assignment 2-3/assignment2/CarRental-lib/nbproject/private/
+/Java EE/Assignment 2-3/assignment2/CarRental-ejb/build/
+/Java EE/Assignment 2-3/assignment2/CarRental-lib/build/
+/Java EE/Assignment 2-3/assignment2/CarRental-lib/dist/
+/Java EE/Assignment 2-3/assignment2/CarRental-client/build/
+/Java EE/Assignment 2-3/assignment2/CarRental/build/
+/Java EE/Assignment 2-3/assignment2/CarRental-client/dist/
+/Java EE/Assignment 2-3/assignment2/CarRental-ejb/dist/
