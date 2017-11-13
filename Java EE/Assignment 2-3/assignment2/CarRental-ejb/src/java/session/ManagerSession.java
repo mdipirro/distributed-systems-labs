@@ -17,8 +17,6 @@ import javax.persistence.PersistenceContext;
 import rental.Car;
 import rental.CarRentalCompany;
 import rental.CarType;
-import rental.RentalStore;
-import rental.Reservation;
 
 @Stateless
 public class ManagerSession implements ManagerSessionRemote {
@@ -55,10 +53,12 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public int getNumberOfReservations(String company, String type) {
-        return em.createNamedQuery("getNumberOfReservationsByCarType")
-                .setParameter("companyName", company)
+        //List skuska;
+        return ((Long) em.createNamedQuery("getNumberOfReservationByCarType")
+//                .setParameter("companyName", company)
                 .setParameter("carType", type)
-                .getFirstResult();
+                .getResultList().get(0)).intValue();
+        //return 5;
     }
     
     @Override
@@ -68,24 +68,17 @@ public class ManagerSession implements ManagerSessionRemote {
     }
     
     @Override
-    public void addRentalCompany(String name, List<String> regions, List<CarType> types) {
-        List<Car> cars = new LinkedList<Car>();
-        for (CarType type : types) {
-            Car car = new Car();
-            car.setType(type);
-            cars.add(car);
-        }
+    public void addRentalCompany(String name, List<String> regions, List<Car> cars) {
         CarRentalCompany company = new CarRentalCompany(name, regions, cars);
         em.persist(company);
     }
     
     @Override
-    public void addCar(String companyName, CarType carType) {
+    public void addCar(String companyName, Car car) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
-        Car car = new Car();
-        car.setType(carType);
+        //Car car = new Car();
+        //car.setType(carType);
         company.addCar(car);
-        em.persist(company);
     }
     
     @Override
@@ -95,17 +88,41 @@ public class ManagerSession implements ManagerSessionRemote {
         em.persist(company);
     }
 
-    /*@Override
+    @Override
+    public String test() {
+        return "Communication works!!!";
+    }
+
+    @Override
+    public CarType getMostPopularCarType(String carRentalCompanyName, int year) {
+        return (CarType)em.createNamedQuery("findMostPopularCarType1")
+                .setParameter("companyName", carRentalCompanyName)
+                .setMaxResults(1)
+                //.setParameter("year", year)
+                .getSingleResult();
+    }
+
+    @Override
+    public Set<String> getBestClients() {           // TODO DO it better!
+        int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
+                .setMaxResults(1)
+                .getSingleResult()).intValue();
+        return new HashSet(em.createNamedQuery("findBestCostumers")
+                .setParameter("maxCount", maxCount)
+                .getResultList());    
+    }
+    
+    @Override
     public void loadRental(String datafile) {
         try {
             CrcData data = loadData(datafile);
             CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
             em.persist(company);
-            Logger.getLogger(RentalStore.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
+            Logger.getLogger(ManagerSession.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
         } catch (NumberFormatException ex) {
-            Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, "bad file", ex);
+            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, "bad file", ex);
         } catch (IOException ex) {
-            Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -117,7 +134,7 @@ public class ManagerSession implements ManagerSessionRemote {
         int nextuid = 0;
        
         //open file from jar
-        BufferedReader in = new BufferedReader(new InputStreamReader(RentalStore.class.getClassLoader().getResourceAsStream(datafile)));
+        BufferedReader in = new BufferedReader(new InputStreamReader(ManagerSession.class.getClassLoader().getResourceAsStream(datafile)));
         
         try {
             while (in.ready()) {
@@ -149,15 +166,10 @@ public class ManagerSession implements ManagerSessionRemote {
 
         return out;
     }
-
-    @Override
-    public String test() {
-        return "Communication works!!!";
-    }
     
     static private class CrcData {
             public List<Car> cars = new LinkedList<Car>();
             public String name;
             public List<String> regions =  new LinkedList<String>();
-    }*/
+    }
 }

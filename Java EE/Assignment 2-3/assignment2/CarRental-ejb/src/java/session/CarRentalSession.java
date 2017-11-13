@@ -12,7 +12,6 @@ import javax.persistence.PersistenceContext;
 import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Quote;
-import rental.RentalStore;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
@@ -24,7 +23,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     private EntityManager em;
 
     private String renter;
-    private List<Quote> quotes = new LinkedList<Quote>();
+    private List<Quote> quotes = new LinkedList<>();
 
     @Override
     public Set<String> getAllRentalCompanies() {
@@ -33,25 +32,26 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        /*List<CarType> availableCarTypes = new LinkedList<CarType>();
-        for(String crc : getAllRentalCompanies()) {
-            for(CarType ct : RentalStore.getRentals().get(crc).getAvailableCarTypes(start, end)) {
-                if(!availableCarTypes.contains(ct))
-                    availableCarTypes.add(ct);
-            }
+        List<CarType> availableCarTypes = new LinkedList<>(); 
+        for(String crc : em.createNamedQuery("findAllRentalCompanies",String.class).getResultList()) { 
+            CarRentalCompany company = em.find(CarRentalCompany.class, crc);
+            for(CarType ct : company.getAvailableCarTypes(start, end)) { 
+                if(!availableCarTypes.contains(ct)) 
+                    availableCarTypes.add(ct); 
+            } 
         }
-        return availableCarTypes;*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        return availableCarTypes;
     }
 
     @Override
     public Quote createQuote(ReservationConstraints constraints) throws ReservationException { 
         boolean companyFound = false; 
-        Iterator<CarRentalCompany> iterator = RentalStore.getRentals().values().iterator(); 
+        Iterator<String> iterator = getAllRentalCompanies().iterator(); 
         CarRentalCompany company = null; 
         // Look for a company having the requested region  
         while (iterator.hasNext() && !companyFound) { 
-            company = iterator.next(); 
+            String companyName = iterator.next();
+            company = em.find(CarRentalCompany.class, companyName);
             companyFound = (company.hasRegion(constraints.getRegion())) && 
                     company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate()); 
         } 
@@ -76,11 +76,11 @@ public class CarRentalSession implements CarRentalSessionRemote {
         List<Reservation> done = new LinkedList<Reservation>();
         try {
             for (Quote quote : quotes) {
-                done.add(RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote));
+                done.add(em.find(CarRentalCompany.class, quote.getRentalCompany()).confirmQuote(quote));
             }
         } catch (Exception e) {
             for(Reservation r:done)
-                RentalStore.getRental(r.getRentalCompany()).cancelReservation(r);
+                em.find(CarRentalCompany.class, r.getRentalCompany()).cancelReservation(r);
             throw new ReservationException(e);
         }
         return done;
@@ -95,12 +95,29 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
     
     @Override 
-    public String getCheapestCarTypes(Date start, Date end, String region) { 
-        /*return ((CarType)em.createNamedQuery("findCheapestCar")
+    public String getCheapestCarTypes(Date start, Date end, String region){ 
+        CarType cheapest = null; 
+        double minPrice = Double.MAX_VALUE; 
+        for (String companyName : em.createNamedQuery("findAllRentalCompanies",String.class).getResultList()) { 
+            CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
+            if (company.hasRegion(region)) { 
+                for (CarType carType : company.getCarTypes()) { 
+                    if (company.isAvailable(carType.getName(), start, end)) { 
+                        double actualPrice = carType.getRentalPricePerDay();//company.calculateRentalPrice(carType.getRentalPricePerDay(), start, end); 
+                        if (actualPrice < minPrice) { 
+                            minPrice = actualPrice; 
+                            cheapest = carType; 
+                        } 
+                    } 
+                } 
+            } 
+        } 
+        return cheapest.getName();
+        /*List<CarType> types = em.createNamedQuery("findCheapestCarType")
                 .setParameter("start", start)
                 .setParameter("end", end)
                 .setParameter("region", region)
-                .getSingleResult()).getName();*/
-        throw new UnsupportedOperationException("Not supported yet."); 
-    } 
+                .getResultList();
+        return types.get(0).getName();*/
+    }
 }

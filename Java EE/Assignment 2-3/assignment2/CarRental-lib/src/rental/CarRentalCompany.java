@@ -22,21 +22,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import rental.Car;
-import rental.Car;
-import rental.CarType;
-import rental.CarType;
-import rental.Quote;
-import rental.Quote;
-import rental.Reservation;
-import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.ReservationConstraints;
-import rental.ReservationException;
-import rental.ReservationException;
 
 @Entity
-@Table(name = "CAR_RENTAL_COMPANY")
+@Table(name = "COMPANY")
 @NamedQueries({
     @NamedQuery(
         name = "findAllRentalCompanies",
@@ -74,30 +62,19 @@ import rental.ReservationException;
     ),
     @NamedQuery(
         name = "getNumberOfReservationByCarType",
-        query = "SELECT COUNT(car.reservations) "
-                + "FROM CarRentalCompany company, IN(company.cars) car "
-                + "WHERE company.name = :companyName "
-                + "     AND car.type = :carType"
+        query = "SELECT COUNT(res.id) "
+                + "FROM Reservation res "
+                + "WHERE res.car.type.name = :carType"
+             //   + "     AND company.name = :companyName "
     ),
-    @NamedQuery(
-        name = "findMostPopularCarType",
-        query = "SELECT car.type "
-                + "FROM CarRentalCompany company, IN(company.cars) car "
-                + "WHERE company.name = :companyName "
-                + "GROUP BY car.type "
-                + "HAVING COUNT(car.reservations) = (SELECT MAX(COUNT(c.reservations)) "
-                + "                                  FROM CarRentalCompany comp, IN(comp.cars) c "
-                + "                                  WHERE comp.name = :companyName "
-                + "                                  GROUP BY c.type) "
-    ), 
     @NamedQuery(
         name = "findCheapestCarType",
         query = "SELECT car.type "
                 + "FROM CarRentalCompany company, IN(company.cars) car "
                 + "WHERE :region MEMBER OF company.regions AND " // region constraint
-                + "car.type = :carType AND " // car type constraint
+           //     + "car.type = :carType AND " // car type constraint
                 + "car.id NOT IN (" // availability
-                + " SELECT res.carId "
+                + " SELECT res.car "
                 + " FROM Reservation res "
                 + " WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
                 + "        (res.startDate <= :end AND res.endDate >= :end) "
@@ -189,7 +166,8 @@ public class CarRentalCompany implements Serializable {
             if(type.getName().equals(carTypeName))
                 return type;
         }
-        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
+        // throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
+        return null;
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {
@@ -294,14 +272,14 @@ public class CarRentalCompany implements Serializable {
         }
         Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
-        Reservation res = new Reservation(quote, car.getId());
+        Reservation res = new Reservation(quote, car);
         car.addReservation(res);
         return res;
     }
 
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
-        getCar(res.getCarId()).removeReservation(res);
+        getCar(res.getCar().getId()).removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {
@@ -315,4 +293,13 @@ public class CarRentalCompany implements Serializable {
         }
         return out;
     }
+
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public Set<CarType> getCarTypes() {
+        return carTypes;
+    }
+    
 }

@@ -1,9 +1,20 @@
 package client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.InitialContext;
+import rental.Car;
+import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
 import rental.ReservationConstraints;
@@ -22,6 +33,16 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         InitialContext context = new InitialContext(); 
         ManagerSessionRemote managerBean = (ManagerSessionRemote) context.lookup(ManagerSessionRemote.class.getName()); 
         System.out.println(managerBean.test());
+        /*ArrayList<String> regions = new ArrayList<>();
+        regions.add("Brussell");
+        managerBean.addRentalCompany("Jakub", regions);
+        CarType type = new CarType("SKUSOBNE", 0, 0, 0, true);
+        Car auto = new Car();
+        auto.setType(type);
+        managerBean.addCar("Jakub", auto);*/
+        //loadRental("hertz.csv",managerBean);
+        //loadRental("dockx.csv",managerBean);
+        
         managerBean.loadRental("hertz.csv");
         managerBean.loadRental("dockx.csv");
         
@@ -31,7 +52,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected Set<String> getBestClients(ManagerSessionRemote ms) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getBestClients();
     }
 
     @Override
@@ -41,14 +62,14 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected CarType getMostPopularCarTypeIn(ManagerSessionRemote ms, String carRentalCompanyName, int year) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getMostPopularCarType(carRentalCompanyName, year);
     }
 
     @Override
     protected CarRentalSessionRemote getNewReservationSession(String name) throws Exception {
         InitialContext context = new InitialContext(); 
         CarRentalSessionRemote bean = (CarRentalSessionRemote) context.lookup(CarRentalSessionRemote.class.getName()); 
-        //bean.initialize(name); 
+        bean.setRenterName(name);
         return bean;
     }
 
@@ -79,6 +100,68 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSessionRemote ms, String carRentalName, String carType) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getNumberOfReservations(carRentalName, carType);
     }
+    
+    /*public static void loadRental(String datafile, ManagerSessionRemote ms) {
+        try {
+            CrcData data = loadData(datafile);
+            ms.addRentalCompany(data.name, data.regions);
+            for(Car car : data.cars){
+                ms.addCar(data.name, car);
+            }
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "bad file", ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private static CrcData loadData(String datafile)
+            throws NumberFormatException, IOException {
+
+        CrcData out = new CrcData();
+        StringTokenizer csvReader;
+        int nextuid = 0;
+       
+        //open file from jar
+        BufferedReader in = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(datafile)));
+        
+        try {
+            while (in.ready()) {
+                String line = in.readLine();
+                
+                if (line.startsWith("#")) {
+                    // comment -> skip					
+                } else if (line.startsWith("-")) {
+                    csvReader = new StringTokenizer(line.substring(1), ",");
+                    out.name = csvReader.nextToken();
+                    out.regions = Arrays.asList(csvReader.nextToken().split(":"));
+                } else {
+                    csvReader = new StringTokenizer(line, ",");
+                    //create new car type from first 5 fields
+                    CarType type = new CarType(csvReader.nextToken(),
+                            Integer.parseInt(csvReader.nextToken()),
+                            Float.parseFloat(csvReader.nextToken()),
+                            Double.parseDouble(csvReader.nextToken()),
+                            Boolean.parseBoolean(csvReader.nextToken()));
+                    //create N new cars with given type, where N is the 5th field
+                    for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
+                        out.cars.add(new Car(nextuid++, type));
+                    }        
+                }
+            } 
+        } finally {
+            in.close();
+        }
+
+        return out;
+    }
+    
+    static private class CrcData {
+            public List<Car> cars = new LinkedList<Car>();
+            public String name;
+            public List<String> regions =  new LinkedList<String>();
+    }*/
 }
