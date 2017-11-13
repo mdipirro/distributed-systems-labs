@@ -32,29 +32,12 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         // Initial DB seed
         InitialContext context = new InitialContext(); 
         ManagerSessionRemote managerBean = (ManagerSessionRemote) context.lookup(ManagerSessionRemote.class.getName()); 
-        /*ArrayList<String> regions = new ArrayList<>();
-        regions.add("Brussell");
-        managerBean.addRentalCompany("Jakub", regions);
-        CarType type = new CarType("SKUSOBNE", 0, 0, 0, true);
-        Car auto = new Car();
-        auto.setType(type);
-        managerBean.addCar("Jakub", auto);*/
+
         loadRental("hertz.csv",managerBean);
         loadRental("dockx.csv",managerBean);
         
-        //managerBean.loadRental("hertz.csv");
-        //managerBean.loadRental("dockx.csv");
-        
         // Run main program
-        //new Main("trips").run();
-        /*CarType carType1 = new CarType("CT1", 4, 10.2f, 12.3, false);
-        CarType carType2 = new CarType("CT2", 4, 10.2f, 12.3, true);
-        managerBean.addRentalCompany("prova", new LinkedList<String>());
-        managerBean.addCarType("prova", carType1);
-        managerBean.addCarType("prova", carType2);
-        managerBean.addCar("prova", carType1);
-        managerBean.addCar("prova", carType1);
-        managerBean.addCar("prova", carType2);*/
+        new Main("trips").run();
     }
 
     @Override
@@ -110,7 +93,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         return ms.getNumberOfReservations(carRentalName, carType);
     }
     
-    public static void loadRental(String datafile, ManagerSessionRemote ms) {
+    private static void loadRental(String datafile, ManagerSessionRemote ms) {
         try {
             CrcData data = loadData(datafile);
             ms.addRentalCompany(data.name, data.regions);
