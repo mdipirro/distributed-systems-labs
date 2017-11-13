@@ -22,11 +22,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import rental.CarType;
-import rental.Quote;
-import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.ReservationException;
 
 @Entity
 @Table(name = "COMPANY")
@@ -77,7 +72,7 @@ import rental.ReservationException;
         query = "SELECT COUNT(res.id) "
                 + "FROM Reservation res "
                 + "WHERE res.carType = :carType"
-             //   + "     AND company.name = :companyName "
+                + "     AND company.name = :companyName "
     ),
     @NamedQuery(
         name = "findCheapestCarType",

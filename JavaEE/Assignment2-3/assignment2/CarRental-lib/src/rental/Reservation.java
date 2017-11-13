@@ -22,10 +22,11 @@ import javax.persistence.Table;
             + ") =  :maxCount"
     ),
     @NamedQuery(
-        name = "findMostPopularCarType1",
+        name = "findMostPopularCarType",
         query = "SELECT res.carType "
                 + "FROM Reservation res "
-                + "WHERE res.rentalCompany = :companyName "
+                + "WHERE res.rentalCompany = :companyName AND "
+                + "      FUNC('YEAR', res.startDate) = :year "
                 + "GROUP BY res.carType "
                 + "ORDER BY COUNT(res.id) desc"
     ),

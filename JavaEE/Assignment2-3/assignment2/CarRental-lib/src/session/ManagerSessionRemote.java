@@ -12,7 +12,6 @@ public interface ManagerSessionRemote {
     Set<Integer> getCarIds(String company,String type);
     int getNumberOfReservations(String company, String type, int carId);
     int getNumberOfReservations(String company, String type);  
-    void loadRental(String datafile);
     void addRentalCompany(String name, List<String> regions);
     void addCar(String companyName, String carType);
     void addCarType(String companyName, CarType carType);
