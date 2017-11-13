@@ -23,10 +23,10 @@ import javax.persistence.Table;
     ),
     @NamedQuery(
         name = "findMostPopularCarType1",
-        query = "SELECT res.car.type "
+        query = "SELECT res.carType "
                 + "FROM Reservation res "
                 + "WHERE res.rentalCompany = :companyName "
-                + "GROUP BY res.car.type "
+                + "GROUP BY res.carType "
                 + "ORDER BY COUNT(res.id) desc"
     ),
     @NamedQuery(
@@ -45,7 +45,7 @@ public class Reservation extends Quote {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
-    private Car car;
+    private int carId;
     
     /***************
      * CONSTRUCTOR *
@@ -54,18 +54,18 @@ public class Reservation extends Quote {
         super();
     }
     
-    public Reservation(Quote quote, Car carId) {
+    public Reservation(Quote quote, int carId) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
-        this.car = carId;
+        this.carId = carId;
     }
     
     /******
      * ID *
      ******/
     
-    public Car getCar() {
-    	return car;
+    public int getCarId() {
+    	return carId;
     }
     
     /*************
@@ -75,6 +75,6 @@ public class Reservation extends Quote {
     @Override
     public String toString() {
         return String.format("Reservation for %s from %s to %s at %s\nCar type: %s\tCar: %s\nTotal price: %.2f", 
-                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), car, getRentalPrice());
+                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), carId, getRentalPrice());
     }
 }

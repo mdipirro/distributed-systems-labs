@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import rental.CarType;
+import rental.Reservation;
 
 @Entity
 @Table(name = "CAR")
@@ -24,21 +26,23 @@ public class Car implements Serializable {
     private static final long serialVersionUID = 5791793413315322288L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
     @ManyToOne(cascade = {PERSIST, MERGE, REFRESH}, fetch = FetchType.EAGER)
     private CarType type;
     
     //@ElementCollection
-    @OneToMany(cascade = ALL, mappedBy = "car")
+    @OneToMany(cascade = ALL)
     private Set<Reservation> reservations;
 
     /***************
      * CONSTRUCTOR *
      ***************/
     
-    public Car() {} // Empty constructor needed for making Car an Entity
+    public Car() {
+        this.reservations = new HashSet<Reservation>();
+    }
     
     public Car(int uid, CarType type) {
     	//this.id = uid;

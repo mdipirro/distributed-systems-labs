@@ -67,18 +67,23 @@ public class ManagerSession implements ManagerSessionRemote {
         em.persist(company);
     }
     
-    @Override
+    /*@Override
     public void addRentalCompany(String name, List<String> regions, List<Car> cars) {
         CarRentalCompany company = new CarRentalCompany(name, regions, cars);
         em.persist(company);
-    }
+    }*/
     
-    @Override
-    public void addCar(String companyName, Car car) {
+    //@Override
+    public void addCar(String companyName, CarType carType) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
-        //Car car = new Car();
-        //car.setType(carType);
+        CarType ct = (CarType) em.createNamedQuery("getCarTypeByName")
+                .setParameter("companyName", companyName)
+                .setParameter("typeName", carType.getName())
+                .getSingleResult();
+        Car car = new Car();
+        car.setType(ct);
         company.addCar(car);
+        em.persist(car);
     }
     
     @Override
@@ -86,11 +91,6 @@ public class ManagerSession implements ManagerSessionRemote {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
         company.addCarType(carType);
         em.persist(company);
-    }
-
-    @Override
-    public String test() {
-        return "Communication works!!!";
     }
 
     @Override

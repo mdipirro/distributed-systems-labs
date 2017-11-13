@@ -6,15 +6,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
-import rental.Car;
-import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
 import rental.ReservationConstraints;
@@ -32,7 +32,6 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         // Initial DB seed
         InitialContext context = new InitialContext(); 
         ManagerSessionRemote managerBean = (ManagerSessionRemote) context.lookup(ManagerSessionRemote.class.getName()); 
-        System.out.println(managerBean.test());
         /*ArrayList<String> regions = new ArrayList<>();
         regions.add("Brussell");
         managerBean.addRentalCompany("Jakub", regions);
@@ -40,14 +39,22 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         Car auto = new Car();
         auto.setType(type);
         managerBean.addCar("Jakub", auto);*/
-        //loadRental("hertz.csv",managerBean);
-        //loadRental("dockx.csv",managerBean);
+        loadRental("hertz.csv",managerBean);
+        loadRental("dockx.csv",managerBean);
         
-        managerBean.loadRental("hertz.csv");
-        managerBean.loadRental("dockx.csv");
+        //managerBean.loadRental("hertz.csv");
+        //managerBean.loadRental("dockx.csv");
         
         // Run main program
-        new Main("trips").run();
+        //new Main("trips").run();
+        /*CarType carType1 = new CarType("CT1", 4, 10.2f, 12.3, false);
+        CarType carType2 = new CarType("CT2", 4, 10.2f, 12.3, true);
+        managerBean.addRentalCompany("prova", new LinkedList<String>());
+        managerBean.addCarType("prova", carType1);
+        managerBean.addCarType("prova", carType2);
+        managerBean.addCar("prova", carType1);
+        managerBean.addCar("prova", carType1);
+        managerBean.addCar("prova", carType2);*/
     }
 
     @Override
@@ -103,12 +110,15 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         return ms.getNumberOfReservations(carRentalName, carType);
     }
     
-    /*public static void loadRental(String datafile, ManagerSessionRemote ms) {
+    public static void loadRental(String datafile, ManagerSessionRemote ms) {
         try {
             CrcData data = loadData(datafile);
             ms.addRentalCompany(data.name, data.regions);
-            for(Car car : data.cars){
-                ms.addCar(data.name, car);
+            for (CarType carType : data.carTypes.keySet()) {
+                ms.addCarType(data.name, carType);
+                for (int i = data.carTypes.get(carType); i > 0; i--) {
+                    ms.addCar(data.name, carType);
+                }
             }
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
         } catch (NumberFormatException ex) {
@@ -146,10 +156,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
                             Float.parseFloat(csvReader.nextToken()),
                             Double.parseDouble(csvReader.nextToken()),
                             Boolean.parseBoolean(csvReader.nextToken()));
-                    //create N new cars with given type, where N is the 5th field
-                    for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-                        out.cars.add(new Car(nextuid++, type));
-                    }        
+                    out.carTypes.put(type, Integer.parseInt(csvReader.nextToken()));       
                 }
             } 
         } finally {
@@ -160,8 +167,8 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     }
     
     static private class CrcData {
-            public List<Car> cars = new LinkedList<Car>();
+            public Map<CarType, Integer> carTypes = new HashMap<CarType, Integer>();
             public String name;
             public List<String> regions =  new LinkedList<String>();
-    }*/
+    }
 }
