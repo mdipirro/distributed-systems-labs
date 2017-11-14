@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -103,12 +104,23 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public Set<String> getBestClients() {           // TODO DO it better!
-        int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
-                .setMaxResults(1)
-                .getSingleResult()).intValue();
-        return new HashSet(em.createNamedQuery("findBestCostumers")
-                .setParameter("maxCount", maxCount)
-                .getResultList());
+    public Set<String> getBestClients() {
+        List<Object[]> results = em.createNamedQuery("findBestCostumers")
+                .getResultList();
+        Set<String> bestCostumers = new HashSet<String>();
+        if (!results.isEmpty()) {
+            boolean stop = false;
+            int highestNumber = ((Number)results.get(0)[1]).intValue();
+            Iterator<Object[]> iterator = results.iterator();
+            while (!stop && iterator.hasNext()) {
+                Object[] costumer = iterator.next();
+                if (((Number)costumer[1]).intValue() == highestNumber) {
+                    bestCostumers.add((String)costumer[0]);
+                } else {
+                    stop = true;
+                }
+            }
+        }
+        return bestCostumers;
     }
 }

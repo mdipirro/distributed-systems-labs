@@ -161,7 +161,8 @@ public class CarRentalCompany {
             if(type.getName().equals(carTypeName))
                 return type;
         }
-        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
+        return null;
+        //throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {

@@ -12,16 +12,6 @@ import javax.persistence.Table;
 @Table(name = "RESERVATION")
 @NamedQueries({
     @NamedQuery(
-        name = "findBestCostumers",
-        query = "SELECT reservation.carRenter "
-            + "FROM Reservation reservation "
-        + "WHERE ("
-            + " SELECT COUNT(res.id) " // how many reservations for this renter?
-            + " FROM Reservation res "
-            + " WHERE res.carRenter = reservation.carRenter "
-            + ") =  :maxCount"
-    ),
-    @NamedQuery(
         name = "findMostPopularCarType",
         query = "SELECT res.carType "
                 + "FROM Reservation res "
@@ -31,11 +21,11 @@ import javax.persistence.Table;
                 + "ORDER BY COUNT(res.id) desc"
     ),
     @NamedQuery(
-        name = "findMaxReservationCount",
-        query = "SELECT COUNT(res.id) " +
-            "FROM Reservation res " +
-            "GROUP BY res.carRenter " +
-            "ORDER BY COUNT(res.id) DESC"
+        name = "findBestCostumers",
+        query = "SELECT res.carRenter, COUNT(res.id) "
+                + "FROM Reservation res "
+                + "GROUP BY res.carRenter "
+                + "ORDER BY COUNT(res.id) DESC"
     )
 })
 public class Reservation extends Quote {
