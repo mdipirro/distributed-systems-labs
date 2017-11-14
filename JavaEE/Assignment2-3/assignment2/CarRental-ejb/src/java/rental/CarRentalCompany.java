@@ -34,6 +34,24 @@ import javax.persistence.Table;
         query = "SELECT company FROM CarRentalCompany company WHERE company.name = :companyName"
     ),
     @NamedQuery(
+        name = "getAvailableCarRentalCompanies",
+        query = "SELECT company "
+                + "FROM CarRentalCompany company JOIN Car car "
+                + "WHERE :region MEMBER OF company.regions AND "
+                + "      car IN(company.cars) AND "
+                + "      car.id NOT IN (" 
+                + "         SELECT res.carId "
+                + "         FROM Reservation res "
+                + "         WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
+                + "               (res.startDate <= :end AND res.endDate >= :end) "
+                + "      ) AND "
+                + "      :carType IN ("
+                + "         SELECT t.name"
+                + "         FROM CarRentalCompany comp, IN(comp.carTypes) t "
+                + "         WHERE comp.name = company.name"
+                + "      )"
+    ),
+    @NamedQuery(
         name = "getCarTypes",
         query = "SELECT company.carTypes "
                 + "FROM CarRentalCompany company "

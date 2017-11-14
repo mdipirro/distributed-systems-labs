@@ -47,24 +47,20 @@ public class CarRentalSession implements CarRentalSessionRemote {
 
     @Override
     public Quote createQuote(ReservationConstraints constraints) throws ReservationException { 
-        boolean companyFound = false; 
-        Iterator<String> iterator = getAllRentalCompanies().iterator(); 
-        CarRentalCompany company = null; 
-        // Look for a company having the requested region  
-        while (iterator.hasNext() && !companyFound) { 
-            String companyName = iterator.next();
-            company = em.find(CarRentalCompany.class, companyName);
-            companyFound = (company.hasRegion(constraints.getRegion())) && 
-                    company.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate()); 
-        } 
-        if (company != null) { // A company has been found 
-            Quote quote = company.createQuote(constraints, renter); 
+        List<CarRentalCompany> companies = em.createNamedQuery("getAvailableCarRentalCompanies")
+                .setParameter("start", constraints.getStartDate())
+                .setParameter("end", constraints.getEndDate())
+                .setParameter("region", constraints.getRegion())
+                .setParameter("carType", constraints.getCarType())
+                .getResultList();
+        if (!companies.isEmpty()) { // A company has been found 
+            Quote quote = companies.get(0).createQuote(constraints, renter); 
             quotes.add(quote); 
             return quote; 
         } 
         // No companies with the requested region, throw an exception 
         throw new ReservationException("No available company with the " 
-                + "requested region <" + constraints.getRegion() + ">"); 
+                + "requested constraints"); 
     } 
 
 
