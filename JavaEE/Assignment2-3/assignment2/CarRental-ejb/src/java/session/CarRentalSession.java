@@ -6,7 +6,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateful;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.MANDATORY;
+import static javax.ejb.TransactionAttributeType.REQUIRED;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.CarRentalCompany;
@@ -21,6 +26,9 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     @PersistenceContext
     private EntityManager em;
+    
+    @Resource
+    private EJBContext context;
 
     private String renter;
     private List<Quote> quotes = new LinkedList<>();
@@ -71,6 +79,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
         return quotes;
     }
 
+    @TransactionAttribute(REQUIRED)
     @Override
     public List<Reservation> confirmQuotes() throws ReservationException {
         List<Reservation> done = new LinkedList<Reservation>();
@@ -79,8 +88,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
                 done.add(em.find(CarRentalCompany.class, quote.getRentalCompany()).confirmQuote(quote));
             }
         } catch (Exception e) {
-            for(Reservation r:done)
-                em.find(CarRentalCompany.class, r.getRentalCompany()).cancelReservation(r);
+            context.setRollbackOnly();
             throw new ReservationException(e);
         }
         return done;

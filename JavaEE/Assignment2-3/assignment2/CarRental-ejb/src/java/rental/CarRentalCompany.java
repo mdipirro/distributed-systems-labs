@@ -94,7 +94,7 @@ import javax.persistence.Table;
 public class CarRentalCompany {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
-    @Id
+    @Id 
     private String name;
     
     @OneToMany(cascade = ALL, mappedBy = "company")
@@ -161,8 +161,7 @@ public class CarRentalCompany {
             if(type.getName().equals(carTypeName))
                 return type;
         }
-        // throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
-        return null;
+        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);  // TODO should this throw exception?
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {
@@ -271,7 +270,7 @@ public class CarRentalCompany {
         car.addReservation(res);
         return res;
     }
-
+    
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
         getCar(res.getCarId()).removeReservation(res);

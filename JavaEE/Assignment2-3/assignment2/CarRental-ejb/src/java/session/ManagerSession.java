@@ -12,6 +12,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.REQUIRED;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.Car;
@@ -59,12 +61,14 @@ public class ManagerSession implements ManagerSessionRemote {
                 .getSingleResult()).intValue();
     }
     
+    @TransactionAttribute(REQUIRED)
     @Override
     public void addRentalCompany(String name, List<String> regions) {
         CarRentalCompany company = new CarRentalCompany(name, regions, new LinkedList<Car>());
         em.persist(company);
     }
     
+    @TransactionAttribute(REQUIRED)
     @Override
     public void addCar(String companyName, String carType) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
@@ -76,14 +80,13 @@ public class ManagerSession implements ManagerSessionRemote {
         car.setType(ct);
         car.setCompany(company);
         company.addCar(car);
-        em.persist(company);
     }
     
+    @TransactionAttribute(REQUIRED)
     @Override
     public void addCarType(String companyName, CarType carType) {
         CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
         company.addCarType(carType);
-        em.persist(company);
     }
 
     @Override
@@ -101,13 +104,11 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public Set<String> getBestClients() {           // TODO DO it better!
-        /*int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
+        int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
                 .setMaxResults(1)
                 .getSingleResult()).intValue();
         return new HashSet(em.createNamedQuery("findBestCostumers")
                 .setParameter("maxCount", maxCount)
-                .getResultList());    */
-        return new HashSet(em.createNamedQuery("findBestCostumersTMP")
                 .getResultList());
     }
 }
