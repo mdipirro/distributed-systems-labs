@@ -45,6 +45,18 @@ hs_err_pid*
 /Java EE/Assignment 1/CarRental-ejb/build/
 /Java EE/Assignment 1/CarRental-ejb/dist/
 /Java EE/Assignment 1/CarRental/dist/
+/JavaEE/Assignment2-3/CarRental/nbproject/private/
+/JavaEE/Assignment2-3/CarRental-client/nbproject/private/
+/JavaEE/Assignment2-3/CarRental-ejb/nbproject/private/
+/JavaEE/Assignment2-3/CarRental-lib/nbproject/private/
+/JavaEE/Assignment2-3/CarRental-lib/build/
+/JavaEE/Assignment2-3/CarRental-lib/dist/
+/JavaEE/Assignment2-3/CarRental-client/build/
+/JavaEE/Assignment2-3/CarRental-client/dist/
+/JavaEE/Assignment2-3/CarRental/build/
+/JavaEE/Assignment2-3/CarRental-ejb/build/
+/JavaEE/Assignment2-3/CarRental-ejb/dist/
+/JavaEE/Assignment2-3/CarRental/dist/
 
 # LaTeX gitignore
 ## Core latex/pdflatex auxiliary files:
