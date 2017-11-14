@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
-import static javax.ejb.TransactionAttributeType.MANDATORY;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,15 +39,10 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        List<CarType> availableCarTypes = new LinkedList<>(); 
-        for(String crc : em.createNamedQuery("findAllRentalCompanies",String.class).getResultList()) { 
-            CarRentalCompany company = em.find(CarRentalCompany.class, crc);
-            for(CarType ct : company.getAvailableCarTypes(start, end)) { 
-                if(!availableCarTypes.contains(ct)) 
-                    availableCarTypes.add(ct); 
-            } 
-        }
-        return availableCarTypes;
+        return em.createNamedQuery("getAvailableCarTypes")
+                .setParameter("start", start)
+                .setParameter("end", end)
+                .getResultList();
     }
 
     @Override

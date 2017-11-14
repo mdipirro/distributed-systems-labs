@@ -13,11 +13,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "CAR")
+@NamedQuery(
+    name = "getAvailableCarTypes",
+    query = "SELECT DISTINCT car.type "
+            + "FROM Car car "
+            + "WHERE car.id NOT IN( "
+            + "     SELECT res.carId "
+            + "     FROM Reservation res "
+            + "     WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
+            + "           (res.startDate <= :end AND res.endDate >= :end)) "
+)
 public class Car {
 
     @Id
