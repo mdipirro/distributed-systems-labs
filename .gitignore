@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-# *.jar
+*.jar
 *.war
 *.ear
 *.zip
@@ -279,3 +279,10 @@ TSWLatexianTemp*
 /Java EE/Assignment 2-3/assignment2/CarRental/build/
 /Java EE/Assignment 2-3/assignment2/CarRental-client/dist/
 /Java EE/Assignment 2-3/assignment2/CarRental-ejb/dist/
+/JavaEE/Assignment2-3/assignment2/CarRental-ejb/build/
+/JavaEE/Assignment2-3/assignment2/CarRental-lib/build/
+/JavaEE/Assignment2-3/assignment2/CarRental-lib/dist/
+/JavaEE/Assignment2-3/assignment2/CarRental-client/build/
+/JavaEE/Assignment2-3/assignment2/CarRental/build/
+/JavaEE/Assignment2-3/assignment2/CarRental-client/dist/
+/JavaEE/Assignment2-3/assignment2/CarRental-ejb/dist/
