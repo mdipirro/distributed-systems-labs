@@ -36,6 +36,31 @@ import javax.persistence.Table;
             "FROM Reservation res " +
             "GROUP BY res.carRenter " +
             "ORDER BY COUNT(res.id) DESC"
+    ),
+    @NamedQuery(
+        name = "findBestCostumersTMP",
+        query = /*"SELECT carRenter "
+                + "FROM ("
+                + " SELECT res.carRenter, COUNT(res.id) AS tmpCount "
+                + " FROM Reservation res "
+                + " GROUP BY res.carRenter "
+                + ") "
+                + "HAVING tmpCount = MAX(tmpCount)"*/
+            
+            
+            
+            "SELECT reservation.carRenter "
+            + "FROM Reservation reservation "
+            + "WHERE ("
+            + " SELECT COUNT(res.id) " // how many reservations for this renter?
+            + " FROM Reservation res "
+            + " WHERE res.carRenter = reservation.carRenter "
+            + ") = ( "
+            + " SELECT COUNT(res.id) " 
+            + " FROM Reservation res " 
+            + " GROUP BY res.carRenter " 
+            + " ORDER BY COUNT(res.id) DESC "
+            + ")"
     )
 })
 public class Reservation extends Quote {

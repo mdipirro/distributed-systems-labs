@@ -53,10 +53,10 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public int getNumberOfReservations(String company, String type) {
-        return (Integer)em.createNamedQuery("getNumberOfReservationByCarType")
+        return ((Long)em.createNamedQuery("getNumberOfReservationByCarType")
                 .setParameter("companyName", company)
                 .setParameter("carType", type)
-                .getSingleResult();
+                .getSingleResult()).intValue();
     }
     
     @Override
@@ -74,6 +74,7 @@ public class ManagerSession implements ManagerSessionRemote {
                 .getSingleResult();
         Car car = new Car();
         car.setType(ct);
+        car.setCompany(company);
         company.addCar(car);
         em.persist(company);
     }
@@ -100,11 +101,13 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public Set<String> getBestClients() {           // TODO DO it better!
-        int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
+        /*int maxCount = ((Long)em.createNamedQuery("findMaxReservationCount")
                 .setMaxResults(1)
                 .getSingleResult()).intValue();
         return new HashSet(em.createNamedQuery("findBestCostumers")
                 .setParameter("maxCount", maxCount)
-                .getResultList());    
+                .getResultList());    */
+        return new HashSet(em.createNamedQuery("findBestCostumersTMP")
+                .getResultList());
     }
 }

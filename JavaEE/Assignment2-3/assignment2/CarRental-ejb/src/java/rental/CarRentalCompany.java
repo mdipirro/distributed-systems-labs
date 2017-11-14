@@ -56,49 +56,38 @@ import javax.persistence.Table;
     @NamedQuery(
         name = "findCarTypesByCompany",
         query = "SELECT t "
-                + "FROM CarRentalCompany company, IN(company.carTypes) t "
-                + "WHERE company.name = :companyName"
+                + "FROM CarRentalCompany company JOIN CarType t "
+                + "WHERE company.name = :companyName AND "
+                + "      t IN(company.carTypes)"
     ),
     @NamedQuery(
         name = "getNumberOfReservationsByCar",
         query = "SELECT COUNT(car.reservations) "
-                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "FROM CarRentalCompany company JOIN Car car "
                 + "WHERE company.name = :companyName AND"
-                + "      car.id = :carId"
+                + "      car.id = :carId AND "
+                + "      car IN(company.cars)"
     ),
     @NamedQuery(
         name = "getNumberOfReservationByCarType",
-        query = "SELECT COUNT(res.id) "
-                + "FROM Reservation res "
-                + "WHERE res.carType = :carType"
-                + "     AND company.name = :companyName "
+        query = "SELECT COUNT(car.reservations) "
+                + "FROM CarRentalCompany company JOIN Car car "
+                + "WHERE car.type.name = :carType "
+                + "      AND company.name = :companyName "
+                + "      AND car IN(company.cars)"
     ),
     @NamedQuery(
         name = "findCheapestCarType",
         query = "SELECT car.type "
-                + "FROM CarRentalCompany company, IN(company.cars) car "
+                + "FROM CarRentalCompany company JOIN Car car "
                 + "WHERE :region MEMBER OF company.regions AND " // region constraint
-           //     + "car.type = :carType AND " // car type constraint
+                + "car IN(company.cars) AND " 
                 + "car.id NOT IN (" // availability
                 + " SELECT res.carId "
                 + " FROM Reservation res "
                 + " WHERE (res.startDate <= :start AND res.endDate >= :start) OR "
                 + "        (res.startDate <= :end AND res.endDate >= :end) "
                 + ") " 
-                /* more complex query
-                + "(" 
-                + " NOT EXISTS  (" // if there are no reservations ending after start
-                + "                 SELECT res.id "
-                + "                 FROM Reservation res "
-                + "                 WHERE res.endDate > :start "
-                + "             )"
-                + " AND "
-                + " NOT EXISTS  (" // if there are no reservations starting after end
-                + "                 SELECT res.id "
-                + "                 FROM Reservation res "
-                + "                 WHERE res.startDate < :end "
-                + "             )"
-                + ") " */
                 + "ORDER BY car.type.rentalPricePerDay asc"
     )
 })
@@ -108,7 +97,7 @@ public class CarRentalCompany {
     @Id
     private String name;
     
-    @OneToMany(cascade = ALL)
+    @OneToMany(cascade = ALL, mappedBy = "company")
     private List<Car> cars;
     
     @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.LAZY)

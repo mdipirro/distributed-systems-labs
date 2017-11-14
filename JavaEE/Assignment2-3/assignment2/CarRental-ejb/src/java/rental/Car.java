@@ -31,6 +31,8 @@ public class Car {
     @OneToMany(cascade = ALL)
     private Set<Reservation> reservations;
 
+    @ManyToOne
+    private CarRentalCompany company;
     /***************
      * CONSTRUCTOR *
      ***************/
@@ -43,6 +45,13 @@ public class Car {
     	//this.id = uid;
         this.type = type;
         this.reservations = new HashSet<Reservation>();
+    }
+    
+    public Car(int uid, CarType type, CarRentalCompany company) {
+    	//this.id = uid;
+        this.type = type;
+        this.reservations = new HashSet<Reservation>();
+        this.company = company;
     }
 
     /******
@@ -62,6 +71,18 @@ public class Car {
 	public void setType(CarType type) {
 		this.type = type;
 	}
+        
+    /***************
+     * CAR RENTAL COMPANY*
+     ****************/    
+    public CarRentalCompany getCompany() {
+        return company;
+    }
+    
+    public void setCompany(CarRentalCompany company) {
+        this.company = company;
+    }
+        
     /****************
      * RESERVATIONS *
      ****************/

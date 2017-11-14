@@ -96,28 +96,11 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     @Override 
     public String getCheapestCarTypes(Date start, Date end, String region){ 
-        CarType cheapest = null; 
-        double minPrice = Double.MAX_VALUE; 
-        for (String companyName : em.createNamedQuery("findAllRentalCompanies",String.class).getResultList()) { 
-            CarRentalCompany company = em.find(CarRentalCompany.class, companyName);
-            if (company.hasRegion(region)) { 
-                for (CarType carType : company.getCarTypes()) { 
-                    if (company.isAvailable(carType.getName(), start, end)) { 
-                        double actualPrice = carType.getRentalPricePerDay();//company.calculateRentalPrice(carType.getRentalPricePerDay(), start, end); 
-                        if (actualPrice < minPrice) { 
-                            minPrice = actualPrice; 
-                            cheapest = carType; 
-                        } 
-                    } 
-                } 
-            } 
-        } 
-        return cheapest.getName();
-        /*List<CarType> types = em.createNamedQuery("findCheapestCarType")
+        List<CarType> types = em.createNamedQuery("findCheapestCarType")
                 .setParameter("start", start)
                 .setParameter("end", end)
                 .setParameter("region", region)
                 .getResultList();
-        return types.get(0).getName();*/
+        return types.get(0).getName();
     }
 }
