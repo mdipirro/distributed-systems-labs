@@ -14,17 +14,12 @@ import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REFRESH;
 import ds.gae.ReservationException;
 
 @Entity
@@ -38,10 +33,17 @@ import ds.gae.ReservationException;
 	),*/
 	@NamedQuery(
 		name = "getCarTypesByCompany",
-		query = "SELECT company.carTypes "
-				+ "FROM CarRentalCompany company "
-				+ "WHERE company.name = :companyName"
+		query = "SELECT carType "
+				+ "FROM CarType carType "
+				+ "WHERE carType.company = :companyName"
 	),
+	@NamedQuery(
+			name = "getCarsByCompanyAndType",
+			query = "SELECT car "
+					+ "FROM Car car "
+					+ "WHERE car.company = :companyName "
+					+ "AND car.type = :carTypeName"
+		),
 	@NamedQuery(
 		name = "getCarRentalCompanyNames",
 		query = "SELECT company.name "
@@ -52,14 +54,14 @@ import ds.gae.ReservationException;
 		query = "SELECT reservation "
 				+ "FROM Reservation reservation "
 				+ "WHERE reservation.carRenter = :renter"
-	)/*,
+	),
 	@NamedQuery(
 		name = "getCarIdsByCarType",
-		query = "SELECT car.id "
-				+ "FROM CarRentalCompany company, IN(company.carTypes) carType, IN(type.cars) car "
-				+ "WHERE company.name = :companyName AND "
-				+ "		 carType.name = :typeName"
-	),
+		query = "SELECT car.carId "
+				+ "FROM Car car "
+				+ "WHERE car.company = :companyName "
+				+ "AND car.type = :typeName"
+	)/*,
 	@NamedQuery(
 		name = "getCarsByCarType",
 		query = "SELECT car "
@@ -69,6 +71,11 @@ import ds.gae.ReservationException;
 	)*/
 })
 public class CarRentalCompany implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -390453454724064667L;
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
@@ -145,6 +152,7 @@ public class CarRentalCompany implements Serializable {
 			for (Car car : type.getCars()) {
 				if (car.isAvailable(start, end)) {
 					availableCarTypes.add(type);
+					break;
 				}
 			}
 		}

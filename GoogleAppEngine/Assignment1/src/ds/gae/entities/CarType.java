@@ -6,14 +6,11 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import static javax.persistence.CascadeType.ALL;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -21,9 +18,16 @@ import com.google.appengine.api.datastore.Key;
 @Table(name = "CAR_TYPE")
 public class CarType implements Serializable {
     
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3042510486634457250L;
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Key key;
+	
+	private String company;
 	
     private String name;
     private int nbOfSeats;
@@ -40,17 +44,22 @@ public class CarType implements Serializable {
 	 ***************/
     
     public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay,
-    		boolean smokingAllowed, Set<Car> cars) {
+    		boolean smokingAllowed, Set<Car> cars, String companyName) {
         this.name = name;
         this.nbOfSeats = nbOfSeats;
         this.trunkSpace = trunkSpace;
         this.rentalPricePerDay = rentalPricePerDay;
         this.smokingAllowed = smokingAllowed;
         this.cars = cars;
+        this.company = companyName;
     }
 
     public String getName() {
     	return name;
+    }
+    
+    public String getCOmpany() {
+    	return company;
     }
     
     public int getNbOfSeats() {

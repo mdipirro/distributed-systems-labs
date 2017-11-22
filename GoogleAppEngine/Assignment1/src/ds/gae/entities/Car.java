@@ -7,36 +7,31 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.REFRESH;
-import static javax.persistence.CascadeType.PERSIST;
-
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.annotations.Unowned;
 
 @Entity
 @Table(name = "CAR")
 public class Car implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3594297949432522842L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Key key;
 	
     private int carId;
-       
-    //@Unowned
-    //@ManyToOne(cascade = {PERSIST, MERGE, REFRESH}, fetch = FetchType.EAGER)
-    //private String type;
+    
+    private String company;
+    private String type;
     
 	@OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST})
     private Set<Reservation> reservations = new HashSet<Reservation>();
@@ -45,8 +40,10 @@ public class Car implements Serializable {
      * CONSTRUCTOR *
      ***************/
     public Car(){}
-    public Car(int uid) {
+    public Car(int uid, String company, String type) {
     	this.carId = uid;
+    	this.company = company;
+    	this.type = type;
     }
     /*public Car(int uid, String type) {
     	this.carId = uid;
@@ -66,13 +63,21 @@ public class Car implements Serializable {
     	return carId;
     }
     
+    /***********
+     * COMPANY
+     ***********/
+    
+    public String getCompany(){
+    	return company;
+    }
+    
     /************
      * CAR TYPE *
      ************/
     
-    /*public String getType() {
+    public String getType() {
         return type;
-    }*/
+    }
 
     /****************
      * RESERVATIONS *

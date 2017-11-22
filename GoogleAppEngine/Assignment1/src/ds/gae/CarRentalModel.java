@@ -2,17 +2,10 @@ package ds.gae;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-
-import com.google.appengine.api.datastore.Key;
 
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
@@ -20,11 +13,9 @@ import ds.gae.entities.CarType;
 import ds.gae.entities.Quote;
 import ds.gae.entities.Reservation;
 import ds.gae.entities.ReservationConstraints;
- 
+
 public class CarRentalModel {
-	
-	public Map<String,CarRentalCompany> CRCS = new HashMap<String, CarRentalCompany>();	
-	
+		
 	private static CarRentalModel instance;
 	
 	public static CarRentalModel get() {
@@ -41,12 +32,12 @@ public class CarRentalModel {
 	 * @return	The list of car types (i.e. name of car type), available
 	 * 			in the given car rental company.
 	 */
-	public Set<String> getCarTypesNames(String crcName) {
+	public List<String> getCarTypesNames(String crcName) {
 		EntityManager em = EMF.get().createEntityManager();
 		try {
-			return (em.createNamedQuery("getCarTypesByCompany", Map.class)
+			return em.createNamedQuery("getCarTypesByCompany", String.class)
 					.setParameter("companyName", crcName)
-					.getSingleResult()).keySet(); 
+					.getResultList(); 
 		} finally {
 			em.close();
 		}
@@ -60,7 +51,7 @@ public class CarRentalModel {
     public Collection<String> getAllRentalCompanyNames() {
     	EntityManager em = EMF.get().createEntityManager();
     	try {
-    		return em.createNamedQuery("getCarRentalCompanyNames").getResultList();
+    		return em.createNamedQuery("getCarRentalCompanyNames",String.class).getResultList();
     	} finally {
     		em.close();
     	}
@@ -162,7 +153,7 @@ public class CarRentalModel {
 	 */
 	public List<Reservation> getReservations(String renter) {
 		EntityManager em = EMF.get().createEntityManager();
-		List<Reservation> result = em.createNamedQuery("getReservationsByCarRenter")
+		List<Reservation> result = em.createNamedQuery("getReservationsByCarRenter",Reservation.class)
 				.setParameter("renter", renter)
 				.getResultList();
 		em.close();
@@ -180,9 +171,9 @@ public class CarRentalModel {
     public Collection<CarType> getCarTypesOfCarRentalCompany(String crcName) {
     	EntityManager em = EMF.get().createEntityManager();
     	try {
-    		return (em.createNamedQuery("getCarTypesByCompany", Map.class)
+    		return em.createNamedQuery("getCarTypesByCompany", CarType.class)
 					.setParameter("companyName", crcName)
-					.getSingleResult()).values(); 
+					.getResultList(); 
     	} finally {
     		em.close();
     	}
@@ -200,12 +191,10 @@ public class CarRentalModel {
     public Collection<Integer> getCarIdsByCarType(String crcName, CarType carType) {
     	EntityManager em = EMF.get().createEntityManager();
     	try {
-    		Collection<Integer> result = new LinkedList<Integer>();
-    		List<Car> cars = getCarsByCarType(crcName, carType);
-    		for (Car car : cars) {
-    			result.add(car.getId());
-    		}
-    		return result;
+    		return em.createNamedQuery("getCarIdsByCarType",Integer.class)
+    				.setParameter("companyName", crcName)
+    				.setParameter("typeName", carType.getName())
+    				.getResultList();
     	} finally {
     		em.close();
     	}
@@ -236,16 +225,10 @@ public class CarRentalModel {
 	private List<Car> getCarsByCarType(String crcName, CarType carType) {				
 		EntityManager em = EMF.get().createEntityManager();
 		try {
-			Collection<CarType> carTypes = (em.createNamedQuery("getCarTypesByCompany", Map.class)
+			return em.createNamedQuery("getCarsByCompanyAndType",Car.class)
 					.setParameter("companyName", crcName)
-					.getSingleResult()).values();
-			List<Car> result = new LinkedList<Car>();
-			for (CarType type : carTypes) {
-				if (type.getName().equals(carType.getName())) {
-					result.addAll(type.getCars());
-				}
-			}
-			return result;
+					.setParameter("carTypeName", carType.getName())
+					.getResultList();
 		} finally {
 			em.close();
 		}

@@ -3,11 +3,7 @@ package ds.gae.listener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -37,11 +33,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	}
 	
 	private boolean isDummyDataAvailable() {
-		// If the Hertz car rental company is in the datastore, we assume the dummy data is available
-
-		// FIXME: use persistence instead
-		return CarRentalModel.get().CRCS.containsKey("Hertz");
-
+		return !CarRentalModel.get().getAllRentalCompanyNames().isEmpty();
 	}
 	
 	private void addDummyData() {
@@ -91,9 +83,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()),
-					new HashSet<Car>());
+					new HashSet<Car>(),
+					name);
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-				type.addCar(new Car(carId++));
+				type.addCar(new Car(carId++,name,type.getName()));
 			}
 			
 			carTypes.add(type);
