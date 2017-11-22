@@ -3,6 +3,8 @@ package ds.gae.servlets;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,10 +36,15 @@ public class PersistTestServlet extends HttpServlet {
 
 				ReservationConstraints c = new ReservationConstraints(
 						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
-						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Compact");
+						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Top");
+				ReservationConstraints c2 = new ReservationConstraints(
+						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
+						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Standard");
 			
-				final Quote q = CarRentalModel.get().createQuote(companyName, userName, c);
-				CarRentalModel.get().confirmQuote(q);
+				List<Quote> quotes = new ArrayList<>();
+				quotes.add(CarRentalModel.get().createQuote("Dockx", userName, c));
+				quotes.add(CarRentalModel.get().createQuote("Hertz", userName, c2));
+				CarRentalModel.get().confirmQuotes(quotes);
 			}
 			
 			resp.sendRedirect(JSPSite.PERSIST_TEST.url());
