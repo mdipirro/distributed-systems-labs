@@ -2,7 +2,9 @@ package ds.gae;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -99,18 +101,28 @@ public class CarRentalModel {
 	 * @throws ReservationException
 	 * 			Confirmation of given quote failed.	
 	 */
-	public void confirmQuote(Quote q) throws ReservationException {
+	public Reservation confirmQuote(Quote q) throws ReservationException {
 		EntityManager em = EMF.get().createEntityManager();
+		EntityTransaction t = em.getTransaction();
 		try {
+			t.begin();
 			CarRentalCompany crc = em.find(CarRentalCompany.class, q.getRentalCompany());
-	        crc.confirmQuote(q);
+	        Reservation res = crc.confirmQuote(q);
+	        t.commit();
+	        return res;
+		} catch(Exception e){
+			t.rollback();
+			throw new ReservationException(e.toString());
 		} finally {
+			if (t.isActive()){
+				t.rollback();
+			}
 			em.close();
 		}	
 	}
 	
     /**
-	 * Confirm the given list of quotes
+	  * Confirm the given list of quotes
 	 * 
 	 * @param 	quotes 
 	 * 			the quotes to confirm
@@ -122,23 +134,50 @@ public class CarRentalModel {
 	 */
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
     	List<Reservation> reservations = new ArrayList<Reservation>();	
-		EntityManager em = EMF.get().createEntityManager();   	
-		EntityTransaction t = em.getTransaction();
+    	Map<String, List<Quote>> quotesForSingleCRC = new HashMap<>(); 
+    	EntityManager em = EMF.get().createEntityManager(); 
 		try{
-			t.begin();
 			for(Quote q: quotes){
-				CarRentalCompany company = em.find(CarRentalCompany.class, q.getRentalCompany());
-				Reservation res = company.confirmQuote(q);
-				reservations.add(res);
+				if(!quotesForSingleCRC.containsKey(q.getRentalCompany()))
+					quotesForSingleCRC.put(q.getRentalCompany(),new ArrayList<Quote>());
+				quotesForSingleCRC.get(q.getRentalCompany()).add(q);
 			}
-			t.commit();
+			for(List<Quote> listOfQuotes : quotesForSingleCRC.values())
+				reservations.addAll(confirmQuotesForConcreteCompany(listOfQuotes));
 		}catch(Exception e) {
-			if (t.isActive()){
-				t.rollback();
+			for(Reservation res : reservations){
+				CarRentalCompany company = em.find(CarRentalCompany.class, res.getRentalCompany());
+				company.cancelReservation(res);
 			}
+			reservations.clear();	
 			throw new ReservationException(e.toString());
 		}
 		finally{
+			em.close();
+		}
+		return reservations;
+    }
+    
+    private List<Reservation> confirmQuotesForConcreteCompany(List<Quote> quotes) throws ReservationException{
+    	List<Reservation> reservations = new ArrayList<Reservation>();	
+    	EntityManager em = EMF.get().createEntityManager(); 
+    	EntityTransaction t = em.getTransaction();
+    	try{
+    		t.begin();
+			for(Quote q: quotes){
+				CarRentalCompany company = em.find(CarRentalCompany.class, q.getRentalCompany());
+				reservations.add(company.confirmQuote(q));
+			}
+			t.commit();
+			System.out.println(quotes.size()+" quotes for company: "+quotes.get(0).getRentalCompany()+" were confirmed");
+		}catch(Exception e) {
+			t.rollback();
+			throw new ReservationException(e.toString());
+		}
+		finally{
+			if (t.isActive()){
+				t.rollback();
+			}
 			em.close();
 		}
 		return reservations;
@@ -158,7 +197,6 @@ public class CarRentalModel {
 				.getResultList();
 		em.close();
 		return result;
-		//return new LinkedList<Reservation>(); //FIXME
     }
 
     /**

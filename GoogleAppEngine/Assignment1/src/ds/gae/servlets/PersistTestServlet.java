@@ -40,10 +40,15 @@ public class PersistTestServlet extends HttpServlet {
 				ReservationConstraints c2 = new ReservationConstraints(
 						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
 						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Standard");
+				ReservationConstraints c3 = new ReservationConstraints(
+						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
+						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Special");
 			
 				List<Quote> quotes = new ArrayList<>();
 				quotes.add(CarRentalModel.get().createQuote("Dockx", userName, c));
 				quotes.add(CarRentalModel.get().createQuote("Hertz", userName, c2));
+				quotes.add(CarRentalModel.get().createQuote("Dockx", userName, c3));
+				
 				CarRentalModel.get().confirmQuotes(quotes);
 			}
 			

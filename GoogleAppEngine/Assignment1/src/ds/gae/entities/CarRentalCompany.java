@@ -61,14 +61,7 @@ import ds.gae.ReservationException;
 				+ "FROM Car car "
 				+ "WHERE car.company = :companyName "
 				+ "AND car.type = :typeName"
-	)/*,
-	@NamedQuery(
-		name = "getCarsByCarType",
-		query = "SELECT car "
-				+ "FROM CarRentalCompany company, IN(company.carTypes) carType, IN(type.cars) car "
-				+ "WHERE company.name = :companyName AND "
-				+ "		 carType.name = :typeName"
-	)*/
+	)
 })
 public class CarRentalCompany implements Serializable {
 
