@@ -111,12 +111,11 @@ public class CarRentalModel {
 	        t.commit();
 	        return res;
 		} catch(Exception e){
-			t.rollback();
-			throw new ReservationException(e.toString());
-		} finally {
 			if (t.isActive()){
 				t.rollback();
 			}
+			throw new ReservationException(e.toString());
+		} finally {
 			em.close();
 		}	
 	}
@@ -171,13 +170,12 @@ public class CarRentalModel {
 			t.commit();
 			System.out.println(quotes.size()+" quotes for company: "+quotes.get(0).getRentalCompany()+" were confirmed");
 		}catch(Exception e) {
-			t.rollback();
-			throw new ReservationException(e.toString());
-		}
-		finally{
 			if (t.isActive()){
 				t.rollback();
 			}
+			throw new ReservationException(e.toString());
+		}
+		finally{
 			em.close();
 		}
 		return reservations;
