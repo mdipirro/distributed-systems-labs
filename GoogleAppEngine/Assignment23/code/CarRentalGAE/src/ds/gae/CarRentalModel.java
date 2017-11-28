@@ -1,5 +1,8 @@
 package ds.gae;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,10 +12,14 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
 import ds.gae.entities.Quote;
+import ds.gae.entities.QuotesStatus;
 import ds.gae.entities.Reservation;
 import ds.gae.entities.ReservationConstraints;
 
@@ -131,7 +138,7 @@ public class CarRentalModel {
 	 * 			One of the quotes cannot be confirmed. 
 	 * 			Therefore none of the given quotes is confirmed.
 	 */
-    public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
+    /*public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException { 
     	List<Reservation> reservations = new ArrayList<Reservation>();	
     	Map<String, List<Quote>> quotesForSingleCRC = new HashMap<>(); 
     	EntityManager em = EMF.get().createEntityManager(); 
@@ -155,7 +162,45 @@ public class CarRentalModel {
 			em.close();
 		}
 		return reservations;
-    }
+    }*/
+	
+	public void confirmQuotes(List<Quote> quotes) throws ReservationException {
+		if (quotes != null && !quotes.isEmpty()) {
+			QuotesStatus status = createQuotesStatus(quotes.get(0).getCarRenter());
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		    ObjectOutputStream oos = null;
+			try {
+				oos = new ObjectOutputStream(bos);
+				Payload payload = new Payload(status.getId(), quotes);
+				oos.writeObject(payload);
+				byte[] bytes = bos.toByteArray();
+				QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withUrl("/worker")
+						.payload(bos.toByteArray()));
+			} catch (IOException e) {
+				throw new ReservationException("An unknown error has occurred during the confirmation");
+			} finally {
+				try {
+					if (oos != null) {
+						oos.close();
+					}
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private QuotesStatus createQuotesStatus(String renter) {
+		EntityManager em = EMF.get().createEntityManager();
+		try {
+			QuotesStatus status = new QuotesStatus(renter);
+			em.persist(status);
+			return status;
+		} finally {
+			em.close();
+		}
+	}
     
     private List<Reservation> confirmQuotesForConcreteCompany(List<Quote> quotes) throws ReservationException{
     	List<Reservation> reservations = new ArrayList<Reservation>();	
