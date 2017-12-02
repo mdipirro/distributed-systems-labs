@@ -1,1 +1,17 @@
 \section{GAE Exercise 3.3}
+\subsection{Question 1}
+Yes, there is. Consider two \texttt{Worker}s, $W_1$ and $W_2$, operating in parallel upon two different quotes sets. These two sets contain a common quote to the last car available for a company $C$. If both $W_1$ and $W_2$ retrieve $C$ at the same initial state (meaning when the car is available and no reservation has been made yet), they both will successfully create a reservation for that car, causing an inconsistency problem. 
+
+This bogus behavior is due to the unsynchronized parallelism of $W_1$ and $W_2$, which independently obtain the same state without knowing that another \texttt{Worker} is operating on that.
+
+\subsection{Question 2}
+\textbf{TODO: Do we use transactions?}
+The most obvious solution would be to use transactions. Transactions maintain parallelism and avoid consistency issues such as the aforementioned one. The only drawback of this solution is the way Google App Engine manages them. It imposes some constraints and limitations to what a transaction can operate on. JPA transactions, for example, can only operate on one entity group at a time. Hence, if the client is trying to confirm quotes belonging to different rental companies the operation will fail. Cross-group transactions, on the other hand, add support for multiple entity groups, but up to a maximum of 25. If the application is large enough, this upper bound is likely to be too low.
+
+Another, worse, solution would be allowing only one confirm operation to be executed at a time. This solution breaks parallelism and limits the application scalability, making delays and latency potentially really high. Since there is no more parallelism, this solution comes with the certainty that no consistency issues will occur. Nonetheless, the drawbacks are far more catastrophic that the advantages. 
+
+\subsection{Question 3}
+Under this assumption, a design using task queues and JPA transaction increases both consistency and parallelism, while keeping the latency low. Since the quotes belong to the same rental company, the operation targets only one entity group, making cross-group transaction avoidable. In this way, a number of tasks equal to the number of rental companies can be active at the same time.
+
+On the other hand, with serial task execution there is no way to improve parallelism, since the design is itself non-parallel. 
+
