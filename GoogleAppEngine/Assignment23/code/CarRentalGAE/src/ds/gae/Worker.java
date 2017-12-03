@@ -2,10 +2,14 @@ package ds.gae;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,25 +47,53 @@ public class Worker extends HttpServlet {
 		}
 	}
 	
-	private void confirmQuotes(List<Quote> quotes) throws ReservationException { 
-		List<Reservation> reservations = new LinkedList<Reservation>();
-		EntityManager em = EMF.get().createEntityManager();
-		try {
-			for (Quote quote : quotes) {
-				reservations.add(confirmQuote(quote, em));
+	public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException { 
+    	List<Reservation> reservations = new ArrayList<Reservation>();	
+    	Map<String, List<Quote>> quotesForSingleCRC = new HashMap<>(); 
+    	EntityManager em = EMF.get().createEntityManager(); 
+		try{
+			for(Quote q: quotes){
+				if(!quotesForSingleCRC.containsKey(q.getRentalCompany()))
+					quotesForSingleCRC.put(q.getRentalCompany(),new ArrayList<Quote>());
+				quotesForSingleCRC.get(q.getRentalCompany()).add(q);
 			}
-		} catch(ReservationException exc) {
-			for (Reservation res : reservations) {
+			for(List<Quote> listOfQuotes : quotesForSingleCRC.values())
+				reservations.addAll(confirmQuotesForConcreteCompany(listOfQuotes));
+		}catch(Exception e) {
+			for(Reservation res : reservations){
 				CarRentalCompany company = em.find(CarRentalCompany.class, res.getRentalCompany());
 				company.cancelReservation(res);
 			}
-			throw exc;
-		} finally {
+			reservations.clear();	
+			throw new ReservationException(e.toString());
+		}
+		finally{
 			em.close();
 		}
-	}
+		return reservations;
+    }
 	
-	private Reservation confirmQuote(Quote quote, EntityManager em) throws ReservationException {
-		return em.find(CarRentalCompany.class, quote.getRentalCompany()).confirmQuote(quote);
-	}
+	private List<Reservation> confirmQuotesForConcreteCompany(List<Quote> quotes) throws ReservationException{
+    	List<Reservation> reservations = new ArrayList<Reservation>();	
+    	EntityManager em = EMF.get().createEntityManager(); 
+    	EntityTransaction t = em.getTransaction();
+    	try{
+    		t.begin();
+			for(Quote q: quotes){
+				CarRentalCompany company = em.find(CarRentalCompany.class, q.getRentalCompany());
+				reservations.add(company.confirmQuote(q));
+			}
+			t.commit();
+			System.out.println(quotes.size()+" quotes for company: "+quotes.get(0).getRentalCompany()+" were confirmed");
+		}catch(Exception e) {
+			if (t.isActive()){
+				t.rollback();
+			}
+			throw new ReservationException(e.toString());
+		}
+		finally{
+			em.close();
+		}
+		return reservations;
+    }
 }

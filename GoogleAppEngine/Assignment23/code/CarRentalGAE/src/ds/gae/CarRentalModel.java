@@ -137,33 +137,7 @@ public class CarRentalModel {
 	 * @throws 	ReservationException
 	 * 			One of the quotes cannot be confirmed. 
 	 * 			Therefore none of the given quotes is confirmed.
-	 */
-    /*public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException { 
-    	List<Reservation> reservations = new ArrayList<Reservation>();	
-    	Map<String, List<Quote>> quotesForSingleCRC = new HashMap<>(); 
-    	EntityManager em = EMF.get().createEntityManager(); 
-		try{
-			for(Quote q: quotes){
-				if(!quotesForSingleCRC.containsKey(q.getRentalCompany()))
-					quotesForSingleCRC.put(q.getRentalCompany(),new ArrayList<Quote>());
-				quotesForSingleCRC.get(q.getRentalCompany()).add(q);
-			}
-			for(List<Quote> listOfQuotes : quotesForSingleCRC.values())
-				reservations.addAll(confirmQuotesForConcreteCompany(listOfQuotes));
-		}catch(Exception e) {
-			for(Reservation res : reservations){
-				CarRentalCompany company = em.find(CarRentalCompany.class, res.getRentalCompany());
-				company.cancelReservation(res);
-			}
-			reservations.clear();	
-			throw new ReservationException(e.toString());
-		}
-		finally{
-			em.close();
-		}
-		return reservations;
-    }*/
-	
+	 */	
 	public void confirmQuotes(List<Quote> quotes) throws ReservationException {
 		if (quotes != null && !quotes.isEmpty()) {
 			QuotesStatus status = createQuotesStatus(quotes.get(0).getCarRenter());
@@ -173,7 +147,6 @@ public class CarRentalModel {
 				oos = new ObjectOutputStream(bos);
 				Payload payload = new Payload(status.getId(), quotes);
 				oos.writeObject(payload);
-				byte[] bytes = bos.toByteArray();
 				QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withUrl("/worker")
 						.payload(bos.toByteArray()));
 			} catch (IOException e) {
@@ -201,30 +174,6 @@ public class CarRentalModel {
 			em.close();
 		}
 	}
-    
-    private List<Reservation> confirmQuotesForConcreteCompany(List<Quote> quotes) throws ReservationException{
-    	List<Reservation> reservations = new ArrayList<Reservation>();	
-    	EntityManager em = EMF.get().createEntityManager(); 
-    	EntityTransaction t = em.getTransaction();
-    	try{
-    		t.begin();
-			for(Quote q: quotes){
-				CarRentalCompany company = em.find(CarRentalCompany.class, q.getRentalCompany());
-				reservations.add(company.confirmQuote(q));
-			}
-			t.commit();
-			System.out.println(quotes.size()+" quotes for company: "+quotes.get(0).getRentalCompany()+" were confirmed");
-		}catch(Exception e) {
-			if (t.isActive()){
-				t.rollback();
-			}
-			throw new ReservationException(e.toString());
-		}
-		finally{
-			em.close();
-		}
-		return reservations;
-    }
 	
 	/**
 	 * Get all reservations made by the given car renter.
