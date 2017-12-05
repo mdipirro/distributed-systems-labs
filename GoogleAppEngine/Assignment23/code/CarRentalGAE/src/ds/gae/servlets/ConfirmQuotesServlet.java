@@ -41,7 +41,8 @@ public class ConfirmQuotesServlet extends HttpServlet {
 			// If you wish confirmQuotesReply.jsp to be shown to the client as
 			// a response of calling this servlet, please replace the following line 
 			// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-			resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
+			//resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
+			resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
 		} catch (ReservationException e) {
 			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
 			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());				

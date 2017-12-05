@@ -53,8 +53,9 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 				<H2>Reply</H2>
 				<div class="group">
 					<p>
-					TODO: Here you can give some information to client who is currently 
-							logged in as user <%=renter%>.
+					Dear <%=renter%>, <br/>
+					Your request has been taken into account and will be processed as soon as possible. <br/>
+					Please refer to <a href="/bookings.jsp">this</a> page to see its status.
 					</p>
 				</div>
 			</div>

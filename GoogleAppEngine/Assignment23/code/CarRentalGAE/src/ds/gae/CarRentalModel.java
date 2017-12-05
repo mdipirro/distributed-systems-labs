@@ -275,4 +275,15 @@ public class CarRentalModel {
 	public boolean hasReservations(String renter) {
 		return this.getReservations(renter).size() > 0;		
 	}	
+	
+	public List<QuotesStatus> getStatusByRenter(String renter) {
+		EntityManager em = EMF.get().createEntityManager();
+		try {
+			return em.createNamedQuery("getStatusByRenter", QuotesStatus.class)
+					.setParameter("renter", renter)
+					.getResultList();
+		} finally {
+			em.close();
+		}
+	}
 }

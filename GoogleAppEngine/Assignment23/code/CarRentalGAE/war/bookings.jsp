@@ -1,6 +1,8 @@
 ﻿<%@page import="java.util.List"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="ds.gae.CarRentalModel"%>
 <%@page import="ds.gae.entities.Reservation"%>
+<%@page import="ds.gae.entities.QuotesStatus"%>
 <%@page import="ds.gae.view.JSPSite"%>
 <%@page import="ds.gae.view.ViewTools"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -85,6 +87,37 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 	} else {
 	 %>
 					<tr><td colspan="6">No Reservations</td></tr>
+	<%
+	} 
+	 %>			
+				</table>
+
+			</div>
+			
+			<div class="groupLabel">Recent activities</div>
+			<div class="group">
+				<table>
+					<tr>
+						<th>Date</th>					
+						<th>Status</th>			
+					</tr>
+						
+	<%
+	List<QuotesStatus> status = CarRentalModel.get().getStatusByRenter(renter);
+	
+	if ( status != null && status.size() > 0) {
+		
+		for (QuotesStatus s : status) {
+	 %>
+					<tr>
+						<td><%= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(s.getIssueDate()) %></td>
+						<td><%= s.toString() %></td>
+					</tr>
+	<%
+		} 
+	} else {
+	 %>
+					<tr><td colspan="6">No Recent Activities</td></tr>
 	<%
 	} 
 	 %>			
