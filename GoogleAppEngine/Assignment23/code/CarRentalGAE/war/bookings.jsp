@@ -110,7 +110,7 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 		for (QuotesStatus s : status) {
 	 %>
 					<tr>
-						<td><%= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(s.getIssueDate()) %></td>
+						<td><%= new SimpleDateFormat("dd.MM.yyyy HH:mm").format(s.getIssueDate()) %></td>
 						<td><%= s.toString() %></td>
 					</tr>
 	<%
