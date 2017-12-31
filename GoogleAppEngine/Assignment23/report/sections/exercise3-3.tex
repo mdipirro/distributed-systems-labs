@@ -1,0 +1,17 @@
+\section{GAE Exercise 3.3}
+\subsection{Question 1}
+No, there isn't. Our application uses transactions to confirm reservations targeting the same \texttt{CarRentalCompany}. Even if two different workers try to reserve the same car $C$, only the first will eventually succeed. They might retrieve the same \texttt{CarRentalCompany} with $C$ available, but the first \texttt{commit()} makes the second worker rollback. 
+
+We create a transaction for each group of reservations involving the same \texttt{CarRentalCompany}. In this way we can ensure consistency at a single entity group level, while keeping the latency low.
+
+\subsection{Question 2}
+The only drawback of our solution is the way Google App Engine manages transactions. It imposes some constraints and limitations to what a transaction can operate on. JPA transactions, for example, can only operate on one entity group at a time. Hence, if the client is trying to confirm quotes belonging to different rental companies the operation will fail. Cross-group transactions, on the other hand, add support for multiple entity groups, but up to a maximum of 25. If the application is large enough, this upper bound is likely to be too low. Nonetheless, this solution preserves parallelism.
+
+Another, worse, solution would be allowing only one confirm operation to be executed at a time. This solution breaks parallelism and limits the application scalability, making delays and latency potentially really high. Since there is no more parallelism, this solution comes with the certainty that no consistency issues will occur. Nonetheless, the drawbacks are far more catastrophic that the advantages. 
+
+We decided to split a big task (confirming quotes belonging to more than one company) in smaller transactions to confirm quotes belonging to ne specific company. If one of them eventually fails, everything is rolled back. This might sometimes break the isolation property, because a worker can see a result which might be deleted, but we think the alternatives are worse. On the one hand, if a non-XGT transaction operates on two different entity groups, it fails. This condition is something likely to happen. On the other hand XGT transactions does not provide a comprehensive assurance because of the maximum-25 entity groups limitation. Moreover, it comes with a higher latency, which is bad to have in a cloud application.
+
+\subsection{Question 3}
+Under this assumption, our design increases both consistency and parallelism, while keeping the latency low. Since the quotes belong to the same rental company, the operation targets only one entity group, making cross-group transaction avoidable. In this way, a number of tasks equal to the number of rental companies can be active at the same time.
+
+On the other hand, with serial task execution there is no way to improve parallelism, since the design is itself non-parallel.
